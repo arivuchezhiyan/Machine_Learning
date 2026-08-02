@@ -635,13 +635,13 @@ Use IEEE style:
 \newpage
 
 % =====================================================================
-% EXPERIMENT 3: LOAN APPROVAL PREDICTION
+% EXPERIMENT 3: LOAN SANCTION AMOUNT REGRESSION & REGULARIZATION
 % =====================================================================
 
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 3 \\ \hline
-Experiment Title & Loan Approval Prediction using Decision Tree, Logistic Regression and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{3}} \\ \hline
+Experiment Title & Loan Sanction Amount Prediction using Linear, Ridge, Lasso and ElasticNet Regression \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning/tree/main/experiment_3}{3}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -650,107 +650,100 @@ Submission Date & 23/07/2026 \\ \hline
 
 \section{Objective}
 State the objective of the experiment:
-In this lab, I evaluated Decision Tree and Logistic Regression models to predict loan approvals based on applicant financial data and credit history. I used ANOVA F-test feature selection to isolate key predictors.
+For this lab assignment, my main goal was predicting approved loan sanction amounts using different linear regression models. I implemented baseline Ordinary Least Squares Linear Regression along with regularized models including Ridge ($L_2$), Lasso ($L_1$) and ElasticNet. I tuned regularization parameters using GridSearchCV, performed 5-fold cross-validation and checked feature coefficient shrinkage to understand feature importance.
 
 \section{Problem Statement}
-Describe the problem, input, output and objective:
-Loan approval prediction is a binary classification task in financial risk management.
+Describe the problem input output and objective:
+Loan sanction amount estimation is a continuous regression problem in banking risk assessment where financial parameters predict loan sanction amounts.
 \begin{itemize}
-\item \textbf{Input}: 12 applicant features including dependents, education, self-employed status, income, loan amount, term, CIBIL score and asset values.
-\item \textbf{Output}: Binary loan status (0 for approved, 1 for rejected).
-\item \textbf{Objective}: Encode categorical attributes, split dataset, select top features, fit classifiers and compare metrics.
+\item \textbf{Input}: 21 raw numerical and categorical feature columns describing applicant income, credit score, loan amount requested, property details and employment status.
+\item \textbf{Output}: Continuous target variable \texttt{Loan Sanction Amount (USD)} representing final approved loan amounts.
+\item \textbf{Objective}: Clean missing values, handle categorical columns using one-hot encoding, scale features with StandardScaler, fit Linear, Ridge, Lasso and ElasticNet models, tune alpha hyperparameters and evaluate model performance using MAE, MSE, RMSE and $R^2$ metrics.
 \end{itemize}
 
 \section{Dataset Description}
 \begin{longtable}{|p{6cm}|p{8cm}|}
 \hline
-Dataset Name & Loan Approval Dataset \\ \hline
-Dataset Source & loan\_approval\_dataset.csv \\ \hline
-Number of Samples & 4269 \\ \hline
-Number of Features & 12 (excluding loan ID) \\ \hline
-Number of Classes & 2 (Approved: 2656, Rejected: 1613) \\ \hline
-Missing Values & 0 missing values \\ \hline
-Train-Test Split & 80\% Train (3415 samples) / 20\% Test (854 samples) \\ \hline
+Dataset Name & Loan Sanction Prediction Dataset \\ \hline
+Dataset Source & train.csv \\ \hline
+Number of Samples & 30000 \\ \hline
+Number of Features & 21 raw features (46 encoded columns) \\ \hline
+Target Variable & Loan Sanction Amount (USD) \\ \hline
+Missing Values & Imputed using median and mode imputation \\ \hline
+Train-Test Split & 80\% Train (24000 samples) / 20\% Test (6000 samples) \\ \hline
 \end{longtable}
 
 \section{Exploratory Data Analysis}
 Include all relevant visualizations:
 \begin{itemize}
-\item \textbf{Dataset overview}: The dataset contains 4269 loan applications with financial and asset details.
-\item \textbf{Statistical summary}: Mean annual income is \$5,059,124, mean loan amount is \$15,131,951 and average CIBIL score is 599.9.
-\item \textbf{Missing value check}: Confirmed zero missing values across all columns.
-\item \textbf{Class distribution}: 2656 approved loans (62.2\%) and 1613 rejected loans (37.8\%).
-\item \textbf{Correlation analysis}: CIBIL credit score showed the strongest correlation with loan approval.
+\item \textbf{Dataset overview}: The dataset contains 30000 applicant financial records with 24 initial columns including ID fields and target values.
+\item \textbf{Target statistics}: Mean sanction amount is \$47,508.36 with a median of \$35,209.40 and standard deviation of \$47,964.39.
+\item \textbf{Missing value handling}: Used \texttt{SimpleImputer} to fill missing numerical values with medians and missing categorical values with modes.
+\item \textbf{Encoding and Scaling}: One-hot encoded categorical columns producing 46 features, then applied \texttt{StandardScaler} to achieve zero mean and unit variance.
 \end{itemize}
 
 \subsection*{Figure Template}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_class_distribution.png}
-\caption{Loan Dataset Target Class Distribution}
-\label{fig:exp3_loan_dist}
+\includegraphics[width=0.75\linewidth]{loan_reg_correlation.png}
+\caption{Correlation Heatmap of Selected Financial Features}
+\label{fig:exp3_reg_corr}
 \end{figure}
 
 \textbf{Inference:}
-The class distribution shows 2656 approved applications (62\%) and 1613 rejected applications (38\%). This moderate imbalance reflects real-world banking approval rates.
+The correlation matrix heatmap shows a strong linear relationship between requested loan amounts and approved sanction amounts ($r = 0.72$). Credit score also exhibits positive correlation with loan sanction values.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_histograms.png}
-\caption{Loan Financial Attributes Histograms}
-\label{fig:exp3_loan_hist}
+\includegraphics[width=0.65\linewidth]{loan_reg_target_dist.png}
+\caption{Distribution of Target Variable: Loan Sanction Amount (USD)}
+\label{fig:exp3_reg_target}
 \end{figure}
 
 \textbf{Inference:}
-The histograms display distributions for financial variables including annual income, loan amount and asset values. CIBIL score is uniformly distributed from 300 to 900, while income and asset values show continuous distributions.
+The target distribution histogram displays noticeable right-skewness. Most approved loan sanction amounts cluster under \$100,000, while a small group of high value applicants extend up to \$400,000.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_boxplot.png}
-\caption{Loan Financial Attributes Boxplot}
-\label{fig:exp3_loan_box}
+\includegraphics[width=0.85\linewidth]{loan_reg_scatter_grid.png}
+\caption{Scatter Plots of Requested Amounts and Credit Scores vs Sanction Amounts}
+\label{fig:exp3_reg_scatter}
 \end{figure}
 
 \textbf{Inference:}
-The boxplot illustrates values across financial attributes. Loan amounts have much larger numerical values than annual income or asset values, showing why scaling or tree-based splits are essential.
+Scatter plots reveal linear trends between requested loan amounts and sanction values. Credit scores show clear step patterns where higher credit score ranges consistently receive higher sanction approvals.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_scatter.png}
-\caption{Annual Income vs Loan Amount Scatter Plot}
-\label{fig:exp3_loan_scatter}
+\includegraphics[width=0.85\linewidth]{loan_reg_hist_box.png}
+\caption{Histograms and Boxplots of Selected Numerical Attributes}
+\label{fig:exp3_reg_hist_box}
 \end{figure}
 
 \textbf{Inference:}
-The scatter plot maps annual income against loan amount. A strong linear relationship ($r = 0.93$) is evident, demonstrating that applicants with higher income apply for larger loans.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\linewidth]{loan_correlation.png}
-\caption{Loan Financial Attributes Correlation Heatmap}
-\label{fig:exp3_loan_corr}
-\end{figure}
-
-\textbf{Inference:}
-The correlation heatmap displays positive correlations between asset valuations and annual income ($r > 0.60$). CIBIL score shows almost no linear correlation with asset values, acting as an independent credit check.
+Histograms and boxplots illustrate varying feature distributions. Income and property price show upper outliers, highlighting why feature scaling with StandardScaler is essential prior to gradient optimization.
 
 \section{Data Preprocessing}
 
 Explain:
 \begin{itemize}
-\item \textbf{Cleaning}: Trimmed extra whitespaces and verified zero missing values.
-\item \textbf{Encoding}: Used \texttt{LabelEncoder} on categorical fields: \texttt{education}, \texttt{self\_employed} and \texttt{loan\_status}.
-\item \textbf{Train-test split}: Split into 80\% training (3415 samples) and 20\% testing (854 samples) using \texttt{random\_state=42}.
-\item \textbf{Feature Selection}: Applied \texttt{SelectKBest} ($f\_classif, k=6$). \texttt{cibil\_score} yielded an F-score of 5018.32, dominating other features. Selected top 6 attributes: \texttt{['cibil\_score', 'loan\_term', 'no\_of\_dependents', 'income\_annum', 'residential\_assets\_value', 'luxury\_assets\_value']}.
+\item \textbf{Data Cleaning}: Dropped non-predictive identifier columns like \texttt{Customer ID} and \texttt{Name}.
+\item \textbf{Imputation}: Applied median imputation for numerical features and mode imputation for categorical columns.
+\item \textbf{One-Hot Encoding}: Converted categorical variables into dummy indicators, expanding the feature count to 46 columns.
+\item \textbf{Scaling}: Scaled all continuous feature columns to zero mean and unit variance using \texttt{StandardScaler}.
+\item \textbf{Train-test split}: Split data into 80\% training (24000 samples) and 20\% test sets (6000 samples) with \texttt{random\_state=42}.
 \end{itemize}
 
 \section{Machine Learning Algorithm}
 
 Explain:
 \begin{itemize}
-\item \textbf{Decision Tree Classifier}: Achieved excellent accuracy ($97.42\%$) because loan approval logic relies on strict threshold conditions.
-\item \textbf{Logistic Regression}: Achieved $82.20\%$ accuracy using linear decision boundaries.
+\item \textbf{Linear Regression}: Fits an Ordinary Least Squares hyperplane minimizing squared error residual sum $\sum (y_i - \hat{y}_i)^2$.
+\item \textbf{Ridge Regression ($L_2$)}: Adds squared coefficient penalty $\alpha \sum w_j^2$ to control coefficient growth and reduce multicollinearity.
+\item \textbf{Lasso Regression ($L_1$)}: Adds absolute coefficient penalty $\alpha \sum |w_j|$ which zeroes out uninformative features for feature selection.
+\item \textbf{ElasticNet Regression}: Combines $L_1$ and $L_2$ penalties $\alpha r \sum |w_j| + \frac{\alpha(1-r)}{2} \sum w_j^2$ to handle correlated feature groups.
+\item \textbf{GridSearchCV Optimization}: Performs 5-fold cross-validation across alpha grids to identify optimal regularization strengths.
 \end{itemize}
 
 \section{Experimental Setup}
@@ -771,51 +764,49 @@ Hardware & Intel Core i7 / 16 GB RAM \\
 \toprule
 Parameter & Value\\
 \midrule
-DecisionTree criterion & Gini (default) \\
-DecisionTree random\_state & 42 \\
-LogisticRegression solver & lbfgs (default) \\
-LogisticRegression max\_iter & 1000 \\
-SelectKBest k & 6 (score\_func=f\_classif) \\
-Train-Test Split test\_size & 0.20 \\
-Train-Test Split random\_state & 42 \\
+Tested $\alpha$ values & 0.001, 0.01, 0.1, 1.0, 10.0, 100.0 \\
+Best $\alpha$ (Ridge Regression) & 0.1 \\
+Best $\alpha$ (Lasso Regression) & 10.0 \\
+Best Parameters (ElasticNet) & $\alpha = 0.01$, $l_1\_ratio = 0.8$ \\
+GridSearchCV Scoring & $R^2$ Score \\
+Cross-Validation Folds & 5-Fold K-Fold ($n\_splits = 5$) \\
 \bottomrule
 \end{tabular}
 
 \section{Results}
 
-\begin{tabular}{lc}
+\subsection*{Hyperparameter Tuning Summary}
+\begin{tabular}{lccs}
 \toprule
-Metric & Value\\
+Model & Search Method & Best Parameters & Best CV $R^2$ \\
 \midrule
-Decision Tree Accuracy & 0.9742 (97.42\%) \\
-Logistic Regression Accuracy & 0.8220 (82.20\%) \\
-Precision (Macro Avg) & 0.83 \\
-Recall (Macro Avg) & 0.79 \\
-F1-score (Macro Avg) & 0.80 \\
+Ridge Regression & GridSearchCV & $\alpha = 0.1$ & 0.5729 \\
+Lasso Regression & GridSearchCV & $\alpha = 10.0$ & 0.5729 \\
+ElasticNet Regression & GridSearchCV & $\alpha = 0.01$, $l_1\_ratio = 0.8$ & 0.5729 \\
 \bottomrule
 \end{tabular}
 
-\subsection*{Detailed Classification Report and Confusion Matrix}
-
-Confusion Matrix (Logistic Regression on Test Split):
-\begin{equation*}
-\begin{bmatrix}
-492 & 44 \\
-108 & 210
-\end{bmatrix}
-\end{equation*}
-
-Classification Report:
+\subsection*{5-Fold Cross-Validation Performance}
 \begin{tabular}{lcccc}
 \toprule
-Class & Precision & Recall & F1-score & Support \\
+Model & MAE (\$) & MSE (\$) & RMSE (\$) & $R^2$ Score \\
 \midrule
-0 (Approved) & 0.82 & 0.92 & 0.87 & 536 \\
-1 (Rejected) & 0.83 & 0.66 & 0.73 & 318 \\
+Linear Regression & 21,815.30 & 1,009,184,647.80 & 31,767.67 & 0.5615 \\
+Ridge Regression & 21,815.07 & 1,009,136,618.66 & 31,766.91 & 0.5615 \\
+Lasso Regression & 21,809.07 & 1,004,581,497.03 & 31,695.13 & 0.5635 \\
+ElasticNet Regression & 21,821.46 & 1,005,238,564.17 & 31,705.50 & 0.5632 \\
+\bottomrule
+\end{tabular}
+
+\subsection*{Test Set Performance Comparison}
+\begin{tabular}{lccccc}
+\toprule
+Model & MAE (\$) & MSE (\$) & RMSE (\$) & $R^2$ Score & Time (s) \\
 \midrule
-Accuracy & & & 0.82 & 854 \\
-Macro Avg & 0.83 & 0.79 & 0.80 & 854 \\
-Weighted Avg & 0.82 & 0.82 & 0.82 & 854 \\
+Linear Regression & 21,847.22 & 1,116,297,199.32 & 33,411.03 & 0.5148 & 0.0868 s \\
+Ridge Regression & 21,847.24 & 1,116,069,831.70 & 33,407.63 & 0.5149 & 0.2841 s \\
+Lasso Regression & 21,838.71 & 1,093,215,465.51 & 33,063.81 & 0.5248 & 54.3233 s \\
+ElasticNet Regression & 21,852.85 & 1,096,107,066.68 & 33,107.51 & 0.5235 & 40.1825 s \\
 \bottomrule
 \end{tabular}
 
@@ -830,51 +821,52 @@ For \textbf{every graph}, provide:
 \item 3--5 line inference
 \end{itemize}
 
-Recommended figures:
-\begin{enumerate}
-\item Correlation Matrix
-\item Class Distribution
-\item Confusion Matrix
-\item ROC Curve
-\item Precision-Recall Curve
-\item Learning Curve (if applicable)
-\item Feature Importance (if applicable)
-\end{enumerate}
-
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_confusion_matrix.png}
-\caption{Loan Approval Dataset Confusion Matrix Heatmap}
-\label{fig:exp3_loan_cm}
+\includegraphics[width=0.85\linewidth]{loan_reg_coefficients.png}
+\caption{Feature Coefficient Comparison across Linear, Ridge, Lasso and ElasticNet}
+\label{fig:exp3_reg_coefs}
 \end{figure}
 
 \textbf{Inference:}
-The confusion matrix for Logistic Regression shows 492 true approvals and 210 true rejections, with 44 false rejections and 108 false approvals ($82.20\%$ test accuracy). The model predicts approved loans better (92\% recall) than rejected loans (66\% recall).
+The feature coefficient plot shows how $L_1$ penalty in Lasso zeroes out uninformative feature weights like income and commercial profession. Requested loan amount and credit score show the highest positive weight across all four algorithms.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{feature_importance.png}
-\caption{Loan Approval Feature Selection (ANOVA $F$-Scores)}
-\label{fig:exp3_feature_imp}
+\includegraphics[width=0.85\linewidth]{loan_reg_residuals.png}
+\caption{Predicted vs Actual Sanction Amounts and Residual Distribution}
+\label{fig:exp3_reg_residuals}
 \end{figure}
 
 \textbf{Inference:}
-The feature importance bar chart shows ANOVA F-scores from \texttt{SelectKBest}. CIBIL credit score dominates with an F-score over 5000, followed by loan term. Key spam tokens in text datasets also show high univariate importance. This confirms selecting top features removes noise while preserving signal.
+Plotting predicted versus actual sanction amounts shows predictions tracking the 45-degree diagonal line closely up to \$200,000. Residual histogram shows errors centered around zero with normal distribution shape.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{loan_reg_alpha_curves.png}
+\caption{Hyperparameter Alpha Tuning Curves for Ridge and Lasso Regression}
+\label{fig:exp3_reg_alpha}
+\end{figure}
+
+\textbf{Inference:}
+The alpha tuning curves show training and validation $R^2$ scores across different alpha values. Small alpha values preserve accuracy while very large alpha values cause underfitting by over-penalizing coefficients.
 
 \section{Discussion}
 Discuss observations, strengths, limitations and improvements:
 \begin{enumerate}
-\item \textbf{Decision Tree Superiority}: Decision Trees ($97.42\%$) performed better than Logistic Regression ($82.20\%$) because approval rules depend on non-linear threshold checks.
-\item \textbf{Main Predictor}: CIBIL credit score ($F=5018.32$) is by far the primary factor driving approval outcomes.
+\item \textbf{Model Comparison}: Lasso ($R^2 = 0.5248$) and ElasticNet ($R^2 = 0.5235$) achieved higher test scores than baseline Linear Regression ($0.5148$) by filtering redundant features.
+\item \textbf{Feature Shrinkage}: Lasso penalty successfully zeroed out weak predictors, showing requested loan amount and credit score drive sanction approvals.
+\item \textbf{Tradeoffs}: Linear and Ridge fit quickly (under 0.3s) while Lasso and ElasticNet grid search take longer due to $L_1$ optimization iterations.
 \end{enumerate}
 
 \section{Conclusion}
 Summarize the experiment and key findings:
-Decision Tree Classifier achieved $97.42\%$ accuracy on loan approval prediction. Feature selection confirmed CIBIL credit score as the primary financial indicator.
+Lasso Regression with $\alpha = 10.0$ achieved the top test score of $0.5248$ $R^2$ with an RMSE of \$33,063.81 on the loan dataset. Hyperparameter tuning confirmed $L_1$ regularization effectively removes uninformative features and prevents overfitting.
 
 \section{References}
 Use IEEE style:
 \begin{enumerate}[label={[\arabic*]}]
+\item R. Tibshirani, ``Regression shrinkage and selection via the Lasso,'' \textit{Journal of the Royal Statistical Society: Series B}, vol. 58, no. 1, pp. 267--288, 1996.
 \item F. Pedregosa \textit{et al.}, ``Scikit-learn: Machine learning in Python,'' \textit{Journal of Machine Learning Research}, vol. 12, pp. 2825--2830, 2011.
 \end{enumerate}
 
