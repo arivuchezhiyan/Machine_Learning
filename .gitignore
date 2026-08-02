@@ -1,0 +1,21 @@
+# Ignore everything by default
+*
+
+# Allow directories
+!*/
+
+# Allow .ipynb files
+!*.ipynb
+
+# Allow LaTeX report files
+!*.tex
+
+# Allow PNG images
+!*.png
+
+# Allow CSV dataset files
+!*.csv
+
+# Ignore checkpoints and mingit
+.ipynb_checkpoints/
+.mingit/

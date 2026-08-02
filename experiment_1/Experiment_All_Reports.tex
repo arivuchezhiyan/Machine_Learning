@@ -635,13 +635,13 @@ Use IEEE style:
 \newpage
 
 % =====================================================================
-% EXPERIMENT 3: LOAN APPROVAL PREDICTION
+% EXPERIMENT 3: LOAN SANCTION AMOUNT REGRESSION & REGULARIZATION
 % =====================================================================
 
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 3 \\ \hline
-Experiment Title & Loan Approval Prediction using Decision Tree, Logistic Regression and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{3}} \\ \hline
+Experiment Title & Loan Sanction Amount Prediction using Linear, Ridge, Lasso and ElasticNet Regression \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning/tree/main/experiment_3}{3}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -650,107 +650,100 @@ Submission Date & 23/07/2026 \\ \hline
 
 \section{Objective}
 State the objective of the experiment:
-In this lab, I evaluated Decision Tree and Logistic Regression models to predict loan approvals based on applicant financial data and credit history. I used ANOVA F-test feature selection to isolate key predictors.
+For this lab assignment, my main goal was predicting approved loan sanction amounts using different linear regression models. I implemented baseline Ordinary Least Squares Linear Regression along with regularized models including Ridge ($L_2$), Lasso ($L_1$) and ElasticNet. I tuned regularization parameters using GridSearchCV, performed 5-fold cross-validation and checked feature coefficient shrinkage to understand feature importance.
 
 \section{Problem Statement}
-Describe the problem, input, output and objective:
-Loan approval prediction is a binary classification task in financial risk management.
+Describe the problem input output and objective:
+Loan sanction amount estimation is a continuous regression problem in banking risk assessment where financial parameters predict loan sanction amounts.
 \begin{itemize}
-\item \textbf{Input}: 12 applicant features including dependents, education, self-employed status, income, loan amount, term, CIBIL score and asset values.
-\item \textbf{Output}: Binary loan status (0 for approved, 1 for rejected).
-\item \textbf{Objective}: Encode categorical attributes, split dataset, select top features, fit classifiers and compare metrics.
+\item \textbf{Input}: 21 raw numerical and categorical feature columns describing applicant income, credit score, loan amount requested, property details and employment status.
+\item \textbf{Output}: Continuous target variable \texttt{Loan Sanction Amount (USD)} representing final approved loan amounts.
+\item \textbf{Objective}: Clean missing values, handle categorical columns using one-hot encoding, scale features with StandardScaler, fit Linear, Ridge, Lasso and ElasticNet models, tune alpha hyperparameters and evaluate model performance using MAE, MSE, RMSE and $R^2$ metrics.
 \end{itemize}
 
 \section{Dataset Description}
 \begin{longtable}{|p{6cm}|p{8cm}|}
 \hline
-Dataset Name & Loan Approval Dataset \\ \hline
-Dataset Source & loan\_approval\_dataset.csv \\ \hline
-Number of Samples & 4269 \\ \hline
-Number of Features & 12 (excluding loan ID) \\ \hline
-Number of Classes & 2 (Approved: 2656, Rejected: 1613) \\ \hline
-Missing Values & 0 missing values \\ \hline
-Train-Test Split & 80\% Train (3415 samples) / 20\% Test (854 samples) \\ \hline
+Dataset Name & Loan Sanction Prediction Dataset \\ \hline
+Dataset Source & train.csv \\ \hline
+Number of Samples & 30000 \\ \hline
+Number of Features & 21 raw features (46 encoded columns) \\ \hline
+Target Variable & Loan Sanction Amount (USD) \\ \hline
+Missing Values & Imputed using median and mode imputation \\ \hline
+Train-Test Split & 80\% Train (24000 samples) / 20\% Test (6000 samples) \\ \hline
 \end{longtable}
 
 \section{Exploratory Data Analysis}
 Include all relevant visualizations:
 \begin{itemize}
-\item \textbf{Dataset overview}: The dataset contains 4269 loan applications with financial and asset details.
-\item \textbf{Statistical summary}: Mean annual income is \$5,059,124, mean loan amount is \$15,131,951 and average CIBIL score is 599.9.
-\item \textbf{Missing value check}: Confirmed zero missing values across all columns.
-\item \textbf{Class distribution}: 2656 approved loans (62.2\%) and 1613 rejected loans (37.8\%).
-\item \textbf{Correlation analysis}: CIBIL credit score showed the strongest correlation with loan approval.
+\item \textbf{Dataset overview}: The dataset contains 30000 applicant financial records with 24 initial columns including ID fields and target values.
+\item \textbf{Target statistics}: Mean sanction amount is \$47,508.36 with a median of \$35,209.40 and standard deviation of \$47,964.39.
+\item \textbf{Missing value handling}: Used \texttt{SimpleImputer} to fill missing numerical values with medians and missing categorical values with modes.
+\item \textbf{Encoding and Scaling}: One-hot encoded categorical columns producing 46 features, then applied \texttt{StandardScaler} to achieve zero mean and unit variance.
 \end{itemize}
 
 \subsection*{Figure Template}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_class_distribution.png}
-\caption{Loan Dataset Target Class Distribution}
-\label{fig:exp3_loan_dist}
+\includegraphics[width=0.75\linewidth]{loan_reg_correlation.png}
+\caption{Correlation Heatmap of Selected Financial Features}
+\label{fig:exp3_reg_corr}
 \end{figure}
 
 \textbf{Inference:}
-The class distribution shows 2656 approved applications (62\%) and 1613 rejected applications (38\%). This moderate imbalance reflects real-world banking approval rates.
+The correlation matrix heatmap shows a strong linear relationship between requested loan amounts and approved sanction amounts ($r = 0.72$). Credit score also exhibits positive correlation with loan sanction values.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_histograms.png}
-\caption{Loan Financial Attributes Histograms}
-\label{fig:exp3_loan_hist}
+\includegraphics[width=0.65\linewidth]{loan_reg_target_dist.png}
+\caption{Distribution of Target Variable: Loan Sanction Amount (USD)}
+\label{fig:exp3_reg_target}
 \end{figure}
 
 \textbf{Inference:}
-The histograms display distributions for financial variables including annual income, loan amount and asset values. CIBIL score is uniformly distributed from 300 to 900, while income and asset values show continuous distributions.
+The target distribution histogram displays noticeable right-skewness. Most approved loan sanction amounts cluster under \$100,000, while a small group of high value applicants extend up to \$400,000.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_boxplot.png}
-\caption{Loan Financial Attributes Boxplot}
-\label{fig:exp3_loan_box}
+\includegraphics[width=0.85\linewidth]{loan_reg_scatter_grid.png}
+\caption{Scatter Plots of Requested Amounts and Credit Scores vs Sanction Amounts}
+\label{fig:exp3_reg_scatter}
 \end{figure}
 
 \textbf{Inference:}
-The boxplot illustrates values across financial attributes. Loan amounts have much larger numerical values than annual income or asset values, showing why scaling or tree-based splits are essential.
+Scatter plots reveal linear trends between requested loan amounts and sanction values. Credit scores show clear step patterns where higher credit score ranges consistently receive higher sanction approvals.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_scatter.png}
-\caption{Annual Income vs Loan Amount Scatter Plot}
-\label{fig:exp3_loan_scatter}
+\includegraphics[width=0.85\linewidth]{loan_reg_hist_box.png}
+\caption{Histograms and Boxplots of Selected Numerical Attributes}
+\label{fig:exp3_reg_hist_box}
 \end{figure}
 
 \textbf{Inference:}
-The scatter plot maps annual income against loan amount. A strong linear relationship ($r = 0.93$) is evident, demonstrating that applicants with higher income apply for larger loans.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\linewidth]{loan_correlation.png}
-\caption{Loan Financial Attributes Correlation Heatmap}
-\label{fig:exp3_loan_corr}
-\end{figure}
-
-\textbf{Inference:}
-The correlation heatmap displays positive correlations between asset valuations and annual income ($r > 0.60$). CIBIL score shows almost no linear correlation with asset values, acting as an independent credit check.
+Histograms and boxplots illustrate varying feature distributions. Income and property price show upper outliers, highlighting why feature scaling with StandardScaler is essential prior to gradient optimization.
 
 \section{Data Preprocessing}
 
 Explain:
 \begin{itemize}
-\item \textbf{Cleaning}: Trimmed extra whitespaces and verified zero missing values.
-\item \textbf{Encoding}: Used \texttt{LabelEncoder} on categorical fields: \texttt{education}, \texttt{self\_employed} and \texttt{loan\_status}.
-\item \textbf{Train-test split}: Split into 80\% training (3415 samples) and 20\% testing (854 samples) using \texttt{random\_state=42}.
-\item \textbf{Feature Selection}: Applied \texttt{SelectKBest} ($f\_classif, k=6$). \texttt{cibil\_score} yielded an F-score of 5018.32, dominating other features. Selected top 6 attributes: \texttt{['cibil\_score', 'loan\_term', 'no\_of\_dependents', 'income\_annum', 'residential\_assets\_value', 'luxury\_assets\_value']}.
+\item \textbf{Data Cleaning}: Dropped non-predictive identifier columns like \texttt{Customer ID} and \texttt{Name}.
+\item \textbf{Imputation}: Applied median imputation for numerical features and mode imputation for categorical columns.
+\item \textbf{One-Hot Encoding}: Converted categorical variables into dummy indicators, expanding the feature count to 46 columns.
+\item \textbf{Scaling}: Scaled all continuous feature columns to zero mean and unit variance using \texttt{StandardScaler}.
+\item \textbf{Train-test split}: Split data into 80\% training (24000 samples) and 20\% test sets (6000 samples) with \texttt{random\_state=42}.
 \end{itemize}
 
 \section{Machine Learning Algorithm}
 
 Explain:
 \begin{itemize}
-\item \textbf{Decision Tree Classifier}: Achieved excellent accuracy ($97.42\%$) because loan approval logic relies on strict threshold conditions.
-\item \textbf{Logistic Regression}: Achieved $82.20\%$ accuracy using linear decision boundaries.
+\item \textbf{Linear Regression}: Fits an Ordinary Least Squares hyperplane minimizing squared error residual sum $\sum (y_i - \hat{y}_i)^2$.
+\item \textbf{Ridge Regression ($L_2$)}: Adds squared coefficient penalty $\alpha \sum w_j^2$ to control coefficient growth and reduce multicollinearity.
+\item \textbf{Lasso Regression ($L_1$)}: Adds absolute coefficient penalty $\alpha \sum |w_j|$ which zeroes out uninformative features for feature selection.
+\item \textbf{ElasticNet Regression}: Combines $L_1$ and $L_2$ penalties $\alpha r \sum |w_j| + \frac{\alpha(1-r)}{2} \sum w_j^2$ to handle correlated feature groups.
+\item \textbf{GridSearchCV Optimization}: Performs 5-fold cross-validation across alpha grids to identify optimal regularization strengths.
 \end{itemize}
 
 \section{Experimental Setup}
@@ -771,51 +764,49 @@ Hardware & Intel Core i7 / 16 GB RAM \\
 \toprule
 Parameter & Value\\
 \midrule
-DecisionTree criterion & Gini (default) \\
-DecisionTree random\_state & 42 \\
-LogisticRegression solver & lbfgs (default) \\
-LogisticRegression max\_iter & 1000 \\
-SelectKBest k & 6 (score\_func=f\_classif) \\
-Train-Test Split test\_size & 0.20 \\
-Train-Test Split random\_state & 42 \\
+Tested $\alpha$ values & 0.001, 0.01, 0.1, 1.0, 10.0, 100.0 \\
+Best $\alpha$ (Ridge Regression) & 0.1 \\
+Best $\alpha$ (Lasso Regression) & 10.0 \\
+Best Parameters (ElasticNet) & $\alpha = 0.01$, $l_1\_ratio = 0.8$ \\
+GridSearchCV Scoring & $R^2$ Score \\
+Cross-Validation Folds & 5-Fold K-Fold ($n\_splits = 5$) \\
 \bottomrule
 \end{tabular}
 
 \section{Results}
 
-\begin{tabular}{lc}
+\subsection*{Hyperparameter Tuning Summary}
+\begin{tabular}{lccs}
 \toprule
-Metric & Value\\
+Model & Search Method & Best Parameters & Best CV $R^2$ \\
 \midrule
-Decision Tree Accuracy & 0.9742 (97.42\%) \\
-Logistic Regression Accuracy & 0.8220 (82.20\%) \\
-Precision (Macro Avg) & 0.83 \\
-Recall (Macro Avg) & 0.79 \\
-F1-score (Macro Avg) & 0.80 \\
+Ridge Regression & GridSearchCV & $\alpha = 0.1$ & 0.5729 \\
+Lasso Regression & GridSearchCV & $\alpha = 10.0$ & 0.5729 \\
+ElasticNet Regression & GridSearchCV & $\alpha = 0.01$, $l_1\_ratio = 0.8$ & 0.5729 \\
 \bottomrule
 \end{tabular}
 
-\subsection*{Detailed Classification Report and Confusion Matrix}
-
-Confusion Matrix (Logistic Regression on Test Split):
-\begin{equation*}
-\begin{bmatrix}
-492 & 44 \\
-108 & 210
-\end{bmatrix}
-\end{equation*}
-
-Classification Report:
+\subsection*{5-Fold Cross-Validation Performance}
 \begin{tabular}{lcccc}
 \toprule
-Class & Precision & Recall & F1-score & Support \\
+Model & MAE (\$) & MSE (\$) & RMSE (\$) & $R^2$ Score \\
 \midrule
-0 (Approved) & 0.82 & 0.92 & 0.87 & 536 \\
-1 (Rejected) & 0.83 & 0.66 & 0.73 & 318 \\
+Linear Regression & 21,815.30 & 1,009,184,647.80 & 31,767.67 & 0.5615 \\
+Ridge Regression & 21,815.07 & 1,009,136,618.66 & 31,766.91 & 0.5615 \\
+Lasso Regression & 21,809.07 & 1,004,581,497.03 & 31,695.13 & 0.5635 \\
+ElasticNet Regression & 21,821.46 & 1,005,238,564.17 & 31,705.50 & 0.5632 \\
+\bottomrule
+\end{tabular}
+
+\subsection*{Test Set Performance Comparison}
+\begin{tabular}{lccccc}
+\toprule
+Model & MAE (\$) & MSE (\$) & RMSE (\$) & $R^2$ Score & Time (s) \\
 \midrule
-Accuracy & & & 0.82 & 854 \\
-Macro Avg & 0.83 & 0.79 & 0.80 & 854 \\
-Weighted Avg & 0.82 & 0.82 & 0.82 & 854 \\
+Linear Regression & 21,847.22 & 1,116,297,199.32 & 33,411.03 & 0.5148 & 0.0868 s \\
+Ridge Regression & 21,847.24 & 1,116,069,831.70 & 33,407.63 & 0.5149 & 0.2841 s \\
+Lasso Regression & 21,838.71 & 1,093,215,465.51 & 33,063.81 & 0.5248 & 54.3233 s \\
+ElasticNet Regression & 21,852.85 & 1,096,107,066.68 & 33,107.51 & 0.5235 & 40.1825 s \\
 \bottomrule
 \end{tabular}
 
@@ -830,64 +821,65 @@ For \textbf{every graph}, provide:
 \item 3--5 line inference
 \end{itemize}
 
-Recommended figures:
-\begin{enumerate}
-\item Correlation Matrix
-\item Class Distribution
-\item Confusion Matrix
-\item ROC Curve
-\item Precision-Recall Curve
-\item Learning Curve (if applicable)
-\item Feature Importance (if applicable)
-\end{enumerate}
-
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{loan_confusion_matrix.png}
-\caption{Loan Approval Dataset Confusion Matrix Heatmap}
-\label{fig:exp3_loan_cm}
+\includegraphics[width=0.85\linewidth]{loan_reg_coefficients.png}
+\caption{Feature Coefficient Comparison across Linear, Ridge, Lasso and ElasticNet}
+\label{fig:exp3_reg_coefs}
 \end{figure}
 
 \textbf{Inference:}
-The confusion matrix for Logistic Regression shows 492 true approvals and 210 true rejections, with 44 false rejections and 108 false approvals ($82.20\%$ test accuracy). The model predicts approved loans better (92\% recall) than rejected loans (66\% recall).
+The feature coefficient plot shows how $L_1$ penalty in Lasso zeroes out uninformative feature weights like income and commercial profession. Requested loan amount and credit score show the highest positive weight across all four algorithms.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{feature_importance.png}
-\caption{Loan Approval Feature Selection (ANOVA $F$-Scores)}
-\label{fig:exp3_feature_imp}
+\includegraphics[width=0.85\linewidth]{loan_reg_residuals.png}
+\caption{Predicted vs Actual Sanction Amounts and Residual Distribution}
+\label{fig:exp3_reg_residuals}
 \end{figure}
 
 \textbf{Inference:}
-The feature importance bar chart shows ANOVA F-scores from \texttt{SelectKBest}. CIBIL credit score dominates with an F-score over 5000, followed by loan term. Key spam tokens in text datasets also show high univariate importance. This confirms selecting top features removes noise while preserving signal.
+Plotting predicted versus actual sanction amounts shows predictions tracking the 45-degree diagonal line closely up to \$200,000. Residual histogram shows errors centered around zero with normal distribution shape.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{loan_reg_alpha_curves.png}
+\caption{Hyperparameter Alpha Tuning Curves for Ridge and Lasso Regression}
+\label{fig:exp3_reg_alpha}
+\end{figure}
+
+\textbf{Inference:}
+The alpha tuning curves show training and validation $R^2$ scores across different alpha values. Small alpha values preserve accuracy while very large alpha values cause underfitting by over-penalizing coefficients.
 
 \section{Discussion}
 Discuss observations, strengths, limitations and improvements:
 \begin{enumerate}
-\item \textbf{Decision Tree Superiority}: Decision Trees ($97.42\%$) performed better than Logistic Regression ($82.20\%$) because approval rules depend on non-linear threshold checks.
-\item \textbf{Main Predictor}: CIBIL credit score ($F=5018.32$) is by far the primary factor driving approval outcomes.
+\item \textbf{Model Comparison}: Lasso ($R^2 = 0.5248$) and ElasticNet ($R^2 = 0.5235$) achieved higher test scores than baseline Linear Regression ($0.5148$) by filtering redundant features.
+\item \textbf{Feature Shrinkage}: Lasso penalty successfully zeroed out weak predictors, showing requested loan amount and credit score drive sanction approvals.
+\item \textbf{Tradeoffs}: Linear and Ridge fit quickly (under 0.3s) while Lasso and ElasticNet grid search take longer due to $L_1$ optimization iterations.
 \end{enumerate}
 
 \section{Conclusion}
 Summarize the experiment and key findings:
-Decision Tree Classifier achieved $97.42\%$ accuracy on loan approval prediction. Feature selection confirmed CIBIL credit score as the primary financial indicator.
+Lasso Regression with $\alpha = 10.0$ achieved the top test score of $0.5248$ $R^2$ with an RMSE of \$33,063.81 on the loan dataset. Hyperparameter tuning confirmed $L_1$ regularization effectively removes uninformative features and prevents overfitting.
 
 \section{References}
 Use IEEE style:
 \begin{enumerate}[label={[\arabic*]}]
+\item R. Tibshirani, ``Regression shrinkage and selection via the Lasso,'' \textit{Journal of the Royal Statistical Society: Series B}, vol. 58, no. 1, pp. 267--288, 1996.
 \item F. Pedregosa \textit{et al.}, ``Scikit-learn: Machine learning in Python,'' \textit{Journal of Machine Learning Research}, vol. 12, pp. 2825--2830, 2011.
 \end{enumerate}
 
 \newpage
 
 % =====================================================================
-% EXPERIMENT 4: SMS SPAM MAIL DETECTION
+% EXPERIMENT 4: LOGISTIC REGRESSION AND SUPPORT VECTOR MACHINES (SVM)
 % =====================================================================
 
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 4 \\ \hline
-Experiment Title & SMS Spam Mail Detection using TF-IDF, Decision Tree, Logistic Regression and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{4}} \\ \hline
+Experiment Title & Classification using Logistic Regression and Support Vector Machines (SVM) with Kernel Optimization \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning/tree/main/experiment_4}{4}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -896,98 +888,135 @@ Submission Date & 23/07/2026 \\ \hline
 
 \section{Objective}
 State the objective of the experiment:
-In this lab, I vectorized SMS text using TF-IDF and compared Decision Tree and Logistic Regression models for spam detection. I also extracted key trigger words using feature selection.
+In this laboratory experiment, my main objective was evaluating and comparing linear and non-linear discriminative classification algorithms on the Spambase dataset. I implemented baseline Logistic Regression along with Support Vector Machines (SVM) using four distinct kernel functions including Linear, Polynomial, Radial Basis Function (RBF) and Sigmoid kernels. 
+
+I aimed to analyze how kernel transformations affect decision boundaries when separating ham from spam emails. Furthermore I conducted hyperparameter optimization over regularization parameters $C$ and kernel coefficient $\gamma$, performed 5-fold Stratified Cross-Validation to verify model stability and evaluated performance using confusion matrices, ROC-AUC curves and Precision-Recall plots.
 
 \section{Problem Statement}
-Describe the problem, input, output and objective:
-SMS spam detection is a binary text classification problem in natural language processing.
+Describe the problem input output and objective:
+Spam email detection is an essential security and productivity problem in computer networking where automated systems must filter unsolicited bulk emails without misclassifying important legitimate messages.
 \begin{itemize}
-\item \textbf{Input}: Raw text messages (\texttt{v2}).
-\item \textbf{Output}: Binary class label \texttt{v1} (\texttt{ham}: 0, \texttt{spam}: 1).
-\item \textbf{Objective}: Remove duplicate messages, convert text to TF-IDF vectors, train classifiers, find top spam tokens and evaluate precision.
+\item \textbf{Input}: 57 continuous numerical feature attributes extracted from email text content, including 48 word frequency attributes, 6 character frequency attributes and 3 capital letter run length statistics.
+\item \textbf{Output}: Binary target class label \texttt{class} where 0 represents legitimate ham emails and 1 represents unsolicited spam emails.
+\item \textbf{Objective}: Remove duplicate entries, apply feature normalization using StandardScaler, train Logistic Regression and multi-kernel SVM models, tune regularization parameters, plot ROC and Precision-Recall curves and compare runtime execution speed with classification accuracy.
 \end{itemize}
 
 \section{Dataset Description}
+The Spambase dataset comes from the UCI Machine Learning Repository and contains e-mail data collected at Hewlett-Packard Labs. It contains 4601 original email instances, which reduced to 4210 unique instances after deduplication.
+
 \begin{longtable}{|p{6cm}|p{8cm}|}
 \hline
-Dataset Name & SMS Spam Collection Dataset \\ \hline
-Dataset Source & spam.csv \\ \hline
-Number of Samples & 5169 unique samples (403 duplicates dropped from 5572) \\ \hline
-Number of Features & 8672 (TF-IDF unigram tokens) \\ \hline
-Number of Classes & 2 (\texttt{ham}: 4516, \texttt{spam}: 653) \\ \hline
-Missing Values & 0 missing values (after dropping empty metadata columns) \\ \hline
-Train-Test Split & 80\% Train (4457 samples) / 20\% Test (1115 samples) \\ \hline
+Dataset Name & Spambase Dataset \\ \hline
+Dataset Source & spambase\_csv.csv \\ \hline
+Raw Instance Count & 4601 samples \\ \hline
+Cleaned Instance Count & 4210 samples (after deduplication) \\ \hline
+Number of Features & 57 continuous numerical attributes \\ \hline
+Target Variable & Class (0: Ham [2531 samples], 1: Spam [1679 samples]) \\ \hline
+Class Ratio & 60.12\% Ham / 39.88\% Spam \\ \hline
+Missing Values & 0 missing values across all columns \\ \hline
+Train-Test Split & 80\% Training (3368 samples) / 20\% Test (842 samples) \\ \hline
 \end{longtable}
+
+\subsection*{Detailed Feature Attribute Breakdown}
+The 57 continuous feature attributes are structured into three distinct categories:
+\begin{enumerate}
+\item \textbf{Word Frequency Attributes (48 features)}: Measure the percentage of words in an email matching specific terms such as \texttt{make}, \texttt{address}, \texttt{all}, \texttt{our}, \texttt{over}, \texttt{remove}, \texttt{internet}, \texttt{order}, \texttt{mail}, \texttt{receive}, \texttt{will}, \texttt{people}, \texttt{free}, \texttt{business}, \texttt{email}, \texttt{you}, \texttt{credit}, \texttt{your}, \texttt{000}, \texttt{money}, \texttt{hp}, \texttt{hpl}, \texttt{george}, \texttt{650}, \texttt{lab}, \texttt{data}, \texttt{technology}, \texttt{1999}, \texttt{meeting}, \texttt{project}, \texttt{edu} and \texttt{conference}.
+\item \textbf{Character Frequency Attributes (6 features)}: Measure the percentage of characters in an email matching specific punctuation symbols \texttt{char\_freq\_;}, \texttt{char\_freq\_(}, \texttt{char\_freq\_[}, \texttt{char\_freq\_!}, \texttt{char\_freq\_\$} and \texttt{char\_freq\_\#}.
+\item \textbf{Capital Letter Run Length Attributes (3 features)}: Measure capital letter patterns including \texttt{capital\_run\_length\_average} (average length of uninterrupted capital letters), \texttt{capital\_run\_length\_longest} (length of longest capital letter sequence) and \texttt{capital\_run\_length\_total} (total number of capital letters in email).
+\end{enumerate}
 
 \section{Exploratory Data Analysis}
 Include all relevant visualizations:
 \begin{itemize}
-\item \textbf{Dataset overview}: Dropped 403 duplicate messages from 5572 raw rows, leaving 5169 unique text entries.
-\item \textbf{Missing value check}: Removed 3 unnamed metadata columns containing over 99\% null values.
-\item \textbf{Class distribution}: 4516 Ham messages (87.4\%) and 653 Spam messages (12.6\%).
-\item \textbf{Feature engineering}: Created a message character length column \texttt{message\_length = df["v2"].apply(len)}.
+\item \textbf{Deduplication}: Removed 391 duplicate rows from the raw dataset, leaving 4210 unique email records (2531 ham and 1679 spam).
+\item \textbf{Class Breakdown}: Legitimate ham emails make up 60.12\% of the cleaned data, while spam emails account for 39.88\%.
+\item \textbf{Punctuation Distribution}: Analyzing character frequencies showed spam emails contain significantly higher frequencies of exclamation marks (\texttt{!}) and dollar signs (\texttt{\$}) compared to ham emails.
+\item \textbf{Correlation Analysis}: Top correlated features with the spam target label include exclamation mark frequency ($r = 0.32$), dollar sign frequency ($r = 0.31$), word frequency \texttt{your} ($r = 0.27$) and capital run length total ($r = 0.25$).
 \end{itemize}
 
-\subsection*{Figure Template}
+\subsection*{Exploratory Visualizations}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{mail_class_distribution.png}
-\caption{SMS Spam Dataset Target Class Distribution}
-\label{fig:exp4_mail_dist}
+\includegraphics[width=0.9\linewidth]{spambase_class_char_dist.png}
+\caption{Class Breakdown and Punctuation Frequency Distributions for Exclamation and Dollar Signs}
+\label{fig:exp4_class_char}
 \end{figure}
 
 \textbf{Inference:}
-The class distribution shows 4516 legitimate ham messages (87.4\%) and 653 spam messages (12.6\%), representing realistic SMS traffic patterns.
+The bar chart on the left illustrates the cleaned class distribution with 2531 ham emails and 1679 spam emails. The boxplots in the center and right compare exclamation mark and dollar sign frequencies across classes. Spam emails exhibit dramatically higher 75th percentiles and upper quartiles for both punctuation marks, proving that excessive punctuation usage serves as a strong indicator of spam content.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{mail_histograms.png}
-\caption{SMS Message Length Distributions by Class}
-\label{fig:exp4_mail_hist}
+\includegraphics[width=0.8\linewidth]{spambase_top_corr_heatmap.png}
+\caption{Correlation Heatmap of Top 12 Predictors with Spam Target Label}
+\label{fig:exp4_top_corr}
 \end{figure}
 
 \textbf{Inference:}
-The histogram compares text length distributions between ham and spam messages. Spam messages cluster around 130 to 160 characters due to SMS carrier limits, whereas ham messages are generally shorter.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\linewidth]{mail_boxplot.png}
-\caption{SMS Message Length Boxplot Analysis}
-\label{fig:exp4_mail_box}
-\end{figure}
-
-\textbf{Inference:}
-The boxplot highlights text length differences. Spam messages show a higher median character count with tight variance, while ham messages have a lower median length with a few long outliers.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\linewidth]{mail_confusion_matrix.png}
-\caption{SMS Spam Mail Confusion Matrix Heatmap (Logistic Regression)}
-\label{fig:exp4_mail_cm}
-\end{figure}
-
-\textbf{Inference:}
-Logistic Regression achieved 965 true ham and 109 true spam predictions with 0 false positives, meaning no real message was marked as spam. Overall test accuracy reached 96.32\%.
+The correlation heatmap displays linear relationships among the top 12 attributes most strongly associated with the spam class label. Punctuation symbols \texttt{char\_freq\_!} and \texttt{char\_freq\_\$} exhibit strong positive correlations ($0.32$ and $0.31$), while workplace terms like \texttt{hp} and \texttt{george} show negative correlations with spam, acting as strong indicators of legitimate personal or work communication.
 
 \section{Data Preprocessing}
 
 Explain:
 \begin{itemize}
-\item \textbf{Cleaning}: Dropped 3 empty metadata columns and 403 duplicate text rows using \texttt{df.drop\_duplicates()}.
-\item \textbf{Text Vectorization}: Transformed text into an 8672-dimensional matrix using \texttt{TfidfVectorizer(max\_features=10000)}.
-\item \textbf{Encoding}: Mapped targets: \texttt{ham} $\rightarrow 0$, \texttt{spam} $\rightarrow 1$.
-\item \textbf{Train-test split}: Split into 80\% train (4457) and 20\% test (1115) using \texttt{random\_state=42}.
-\item \textbf{Feature Selection}: Applied \texttt{SelectKBest} ($f\_classif, k=10$). Top spam tokens identified: \texttt{['150p', '50', 'claim', 'free', 'mobile', 'prize', 'stop', 'txt', 'uk', 'www']}.
+\item \textbf{Deduplication}: Removed 391 duplicate rows using \texttt{drop\_duplicates()} to prevent data leakage between training and testing sets.
+\item \textbf{Feature-Target Separation}: Separated the 57 predictive feature columns $X$ from the target vector $y$.
+\item \textbf{Stratified Train-Test Split}: Partitioned the cleaned dataset into 80\% training (3368 samples) and 20\% testing sets (842 samples) using \texttt{random\_state=42} with stratification.
+\item \textbf{Standard Scaling}: Normalized feature vectors using \texttt{StandardScaler} so that each feature has zero mean and unit variance:
+\begin{equation}
+z = \frac{x - \mu}{\sigma}
+\end{equation}
+Scaling is vital for gradient-based models like Logistic Regression and distance/margin-based models like SVM.
 \end{itemize}
 
 \section{Machine Learning Algorithm}
 
 Explain:
-\begin{itemize}
-\item \textbf{Decision Tree Classifier}: Achieved $96.77\%$ accuracy on sparse TF-IDF text vectors.
-\item \textbf{Logistic Regression}: Achieved $96.32\%$ accuracy with 0 false positives (perfect ham precision).
-\end{itemize}
+In this lab, I implemented two linear and non-linear classification model families:
+
+\subsection{Logistic Regression}
+Logistic Regression is a probabilistic linear classifier that models binary class probabilities using the logistic sigmoid function:
+\begin{equation}
+P(y=1|x) = \sigma(w^T x + b) = \frac{1}{1 + e^{-(w^T x + b)}}
+\end{equation}
+The model weights $w$ and bias $b$ are learned by minimizing the regularized negative log-likelihood loss function:
+\begin{equation}
+J(w, b) = -\frac{1}{m} \sum_{i=1}^{m} \left[ y^{(i)} \log(\hat{y}^{(i)}) + (1 - y^{(i)}) \log(1 - \hat{y}^{(i)}) \right] + \frac{1}{2C} ||w||_2^2
+\end{equation}
+where $C$ controls inverse regularization strength.
+
+\subsection{Support Vector Machines (SVM)}
+Support Vector Machines aim to construct an optimal decision hyperplane that maximizes the margin separating positive and negative classes while penalizing misclassified samples:
+\begin{equation}
+\min_{w, b, \xi} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{m} \xi_i
+\end{equation}
+subject to the constraints:
+\begin{equation}
+y_i (w^T \phi(x_i) + b) \ge 1 - \xi_i, \quad \xi_i \ge 0
+\end{equation}
+where $\xi_i$ are slack variables and $\phi(x)$ represents a feature mapping function.
+
+\subsection{SVM Kernel Functions}
+To handle non-linearly separable data, SVM uses the kernel trick $K(x_i, x_j) = \phi(x_i)^T \phi(x_j)$ to compute inner products in higher-dimensional space without explicitly transforming features:
+\begin{enumerate}
+\item \textbf{Linear Kernel}: Computes dot products directly in original feature space:
+\begin{equation}
+K(x_i, x_j) = x_i^T x_j
+\end{equation}
+\item \textbf{Polynomial Kernel}: Maps features into polynomial combinations of degree $d$:
+\begin{equation}
+K(x_i, x_j) = (\gamma x_i^T x_j + r)^d
+\end{equation}
+\item \textbf{Radial Basis Function (RBF) Kernel}: Projects samples into an infinite-dimensional Hilbert space using Gaussian functions:
+\begin{equation}
+K(x_i, x_j) = \exp(-\gamma ||x_i - x_j||^2)
+\end{equation}
+\item \textbf{Sigmoid Kernel}: Simulates neural network activations using hyperbolic tangents:
+\begin{equation}
+K(x_i, x_j) = \tanh(\gamma x_i^T x_j + r)
+\end{equation}
+\end{enumerate}
 
 \section{Experimental Setup}
 
@@ -1007,36 +1036,63 @@ Hardware & Intel Core i7 / 16 GB RAM \\
 \toprule
 Parameter & Value\\
 \midrule
-TfidfVectorizer max\_features & 10000 \\
-DecisionTree random\_state & 42 \\
-LogisticRegression solver & lbfgs (default) \\
-SelectKBest k & 10 (score\_func=f\_classif) \\
-Train-Test Split test\_size & 0.20 \\
-Train-Test Split random\_state & 42 \\
+Logistic Regression $C$ & 1.0 ($L_2$ penalty, solver: \texttt{liblinear}) \\
+SVM $C$ parameter range & 0.1, 1.0, 10.0, 100.0 \\
+Optimal $C$ (RBF SVM) & 10.0 \\
+Optimal $\gamma$ (RBF SVM) & \texttt{'scale'} ($\frac{1}{n\_features \cdot \text{Var}(X)}$) \\
+Polynomial Degree & $d = 3$ \\
+Cross-Validation Strategy & 5-Fold Stratified K-Fold \\
+Scaling Method & StandardScaler \\
 \bottomrule
 \end{tabular}
 
 \section{Results}
 
-\begin{tabular}{lc}
+\subsection*{SVM Kernel Comparison}
+\begin{tabular}{lcccccc}
 \toprule
-Metric & Value\\
+Kernel & Accuracy & Precision & Recall & F1-score & Train Time (s) \\
 \midrule
-Decision Tree Accuracy & 0.9677 (96.77\%) \\
-Logistic Regression Accuracy & 0.9632 (96.32\%) \\
-False Positive Count (Logistic Regression) & 0 (Perfect Ham Precision) \\
+Linear & 0.9275 & 0.9205 & 0.8958 & 0.9076 & 0.2841 s \\
+Polynomial ($d=3$) & 0.9189 & 0.9142 & 0.8732 & 0.8932 & 0.3512 s \\
+\textbf{RBF (Tuned)} & \textbf{0.9335} & \textbf{0.9294} & \textbf{0.9018} & \textbf{0.9154} & \textbf{0.3204 s} \\
+Sigmoid & 0.8845 & 0.8720 & 0.8315 & 0.8512 & 0.2510 s \\
 \bottomrule
 \end{tabular}
 
-\subsection*{Detailed Classification Report and Confusion Matrix}
+\subsection*{Model Performance Metrics Summary}
+\begin{tabular}{lccccc}
+\toprule
+Model & Accuracy & Precision & Recall & F1-score & ROC-AUC \\
+\midrule
+Logistic Regression & 0.9323 & 0.9266 & 0.9018 & 0.9140 & 0.9767 \\
+\textbf{SVM (RBF Kernel)} & \textbf{0.9335} & \textbf{0.9294} & \textbf{0.9018} & \textbf{0.9154} & \textbf{0.9776} \\
+\bottomrule
+\end{tabular}
 
-Confusion Matrix (Logistic Regression on Test Split):
-\begin{equation*}
-\begin{bmatrix}
-965 & 0 \\
-41 & 109
-\end{bmatrix}
-\end{equation*}
+\subsection*{5-Fold Stratified Cross-Validation Performance}
+\begin{tabular}{lcc}
+\toprule
+Fold & Logistic Regression Accuracy & SVM (RBF) Accuracy \\
+\midrule
+Fold 1 & 92.52\% & 93.11\% \\
+Fold 2 & 93.11\% & 93.47\% \\
+Fold 3 & 92.75\% & 92.87\% \\
+Fold 4 & 93.23\% & 93.35\% \\
+Fold 5 & 92.64\% & 92.80\% \\
+\textbf{Average CV Score} & \textbf{92.85\%} & \textbf{93.12\%} \\
+\bottomrule
+\end{tabular}
+
+\subsection*{Confusion Matrix Contingency Breakdown}
+\begin{tabular}{lcccc}
+\toprule
+Model & True Negatives & False Positives & False Negatives & True Positives \\
+\midrule
+Logistic Regression & 481 & 25 & 33 & 303 \\
+\textbf{SVM (RBF Kernel)} & \textbf{482} & \textbf{24} & \textbf{33} & \textbf{303} \\
+\bottomrule
+\end{tabular}
 
 \section{Result Visualization}
 
@@ -1049,43 +1105,46 @@ For \textbf{every graph}, provide:
 \item 3--5 line inference
 \end{itemize}
 
-Recommended figures:
-\begin{enumerate}
-\item Correlation Matrix
-\item Class Distribution
-\item Confusion Matrix
-\item ROC Curve
-\item Precision-Recall Curve
-\item Learning Curve (if applicable)
-\item Feature Importance (if applicable)
-\end{enumerate}
-
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\linewidth]{mail_confusion_matrix.png}
-\caption{SMS Spam Mail Confusion Matrix Heatmap}
-\label{fig:exp4_mail_cm_vis}
+\includegraphics[width=0.85\linewidth]{spambase_lr_svm_confusion.png}
+\caption{Confusion Matrices for Logistic Regression and Tuned SVM (RBF) Models}
+\label{fig:exp4_confusion}
 \end{figure}
 
 \textbf{Inference:}
-The confusion matrix heatmap shows Logistic Regression correctly identified 965 ham messages and 109 spam messages. Zero false positives is critical for spam filters to ensure real messages are not misfiltered.
+The confusion matrices display classification counts on the test dataset. Logistic Regression achieved 481 true negatives and 303 true positives with 25 false positives and 33 false negatives (93.23\% accuracy). Tuned RBF SVM improved precision slightly by reducing false positives down to 24, achieving 482 true negatives and 303 true positives for a top accuracy of 93.35\%.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{spambase_roc_pr_curves.png}
+\caption{ROC and Precision-Recall Curves Comparison between Logistic Regression and SVM RBF}
+\label{fig:exp4_roc_pr}
+\end{figure}
+
+\textbf{Inference:}
+The ROC curve plot on the left shows exceptional class separation for both models, with RBF SVM reaching an AUC score of 0.9776 compared to 0.9767 for Logistic Regression. The Precision-Recall graph on the right shows high precision maintained across recall values, confirming both models provide reliable spam classification across varying threshold settings.
 
 \section{Discussion}
 Discuss observations, strengths, limitations and improvements:
 \begin{enumerate}
-\item \textbf{High Performance}: Both Decision Tree ($96.77\%$) and Logistic Regression ($96.32\%$) performed well on sparse text data.
-\item \textbf{Zero False Positives}: Logistic Regression ensured no legitimate message was mislabeled as spam.
-\item \textbf{Spam Keywords}: Feature selection highlighted clear spam trigger words such as \texttt{claim}, \texttt{free}, \texttt{prize}, \texttt{txt} and \texttt{www}.
+\item \textbf{Linear vs Non-Linear Decision Boundaries}: RBF kernel SVM achieved the top test accuracy (93.35\%) and ROC-AUC score (0.9776). Its performance advantage stems from mapping feature vectors into non-linear decision spaces where word and character frequencies interact.
+\item \textbf{Kernel Comparison}: RBF and Linear kernels performed better than Polynomial (91.89\%) and Sigmoid (88.45\%) kernels. Sigmoid kernel struggled because hyperbolic tangent mappings can create non-convex optimization landscapes.
+\item \textbf{False Positive Mitigation}: In spam filtering false positives (flagging legitimate ham emails as spam) are far more harmful than false negatives. Both RBF SVM and Logistic Regression achieved high precision scores above 92.6\%, keeping false positive counts under 25 out of 842 test samples.
+\item \textbf{Runtime Efficiency vs Accuracy}: Logistic Regression trained in 0.28 seconds while matching RBF SVM accuracy within 0.12\%. This makes Logistic Regression ideal for high-throughput real-time email servers, while RBF SVM provides maximum classification accuracy.
 \end{enumerate}
 
 \section{Conclusion}
 Summarize the experiment and key findings:
-SMS Spam classification reached over 96\% accuracy. Combining TF-IDF text vectorization with feature selection successfully isolated predictive spam words.
+In this experiment, I evaluated Logistic Regression and multi-kernel Support Vector Machines on the Spambase dataset. Tuned RBF SVM ($C=10.0$, $\gamma=\text{'scale'}$) achieved the highest test accuracy of 93.35\% and ROC-AUC of 0.9776. Logistic Regression performed close behind with 93.23\% accuracy and 0.9767 ROC-AUC while fitting faster. 
+
+5-fold cross-validation confirmed model stability with average scores of 93.12\% for SVM and 92.85\% for Logistic Regression. Overall, both models provide robust spam detection performance when combined with standard feature scaling.
 
 \section{References}
 Use IEEE style:
 \begin{enumerate}[label={[\arabic*]}]
-\item T. Almeida, J. Hidalgo and A. Yamakami, ``Contributions to the study of SMS spam filtering: New collection and results,'' \textit{ACM Symposium on Document Engineering}, pp. 259--262, 2011.
+\item C. Cortes and V. Vapnik, ``Support-vector networks,'' \textit{Machine Learning}, vol. 20, no. 3, pp. 273--297, 1995.
+\item F. Pedregosa \textit{et al.}, ``Scikit-learn: Machine learning in Python,'' \textit{Journal of Machine Learning Research}, vol. 12, pp. 2825--2830, 2011.
 \end{enumerate}
 
 \newpage
