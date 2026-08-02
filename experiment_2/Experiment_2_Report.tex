@@ -39,7 +39,7 @@ showstringspaces=false
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 2 \\ \hline
-Experiment Title & Spambase Email Classification using Naive Bayes, K-Nearest Neighbors, Hyperparameter Optimization, and Cross-Validation \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning/tree/main/experiment_2}{2}} \\ \hline
+Experiment Title & Spambase Email Classification using Naive Bayes, K-Nearest Neighbors, Hyperparameter Tuning and Cross-Validation \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning/tree/main/experiment_2}{2}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -48,15 +48,15 @@ Submission Date & 23/07/2026 \\ \hline
 
 \section{Objective}
 State the objective of the experiment:
-In this lab experiment, I implemented, trained, and compared multiple probabilistic and instance-based machine learning classifiers on the Spambase dataset. Specifically, I evaluated three Naive Bayes variants (Gaussian, Multinomial, and Bernoulli) alongside K-Nearest Neighbors (KNN). I also optimized hyperparameters using GridSearchCV and RandomizedSearchCV, compared indexing structures (KDTree vs BallTree), and conducted 5-fold Stratified Cross-Validation.
+My main goal in this lab was testing different classification models on the Spambase dataset to see how well they filter spam emails. I built three types of Naive Bayes models (Gaussian, Multinomial and Bernoulli) along with a K-Nearest Neighbors model. To improve the KNN model performance I ran grid search and random search to pick optimal parameters. I also compared tree indexing methods like KDTree and BallTree and checked overall stability using 5-fold cross-validation.
 
 \section{Problem Statement}
-Describe the problem, input, output, and objective:
-Spam detection is a binary classification problem designed to filter automated commercial messages from legitimate emails based on word frequencies and character frequencies.
+Describe the problem input output and objective:
+Spam filtering involves classifying emails as either legitimate ham or unwanted spam based on key word and character counts.
 \begin{itemize}
-\item \textbf{Input}: 57 continuous feature columns representing word frequencies (\texttt{word\_freq\_*}) and character frequencies (\texttt{char\_freq\_*}).
-\item \textbf{Output}: Binary target label \texttt{spam} (0 for legitimate ham email, 1 for spam email).
-\item \textbf{Objective}: Normalize features using MinMaxScaler, partition data into 80\% training and 20\% test splits, fit Naive Bayes variants and KNN classifiers, tune parameters, analyze ROC and PR curves, and compare runtime efficiencies.
+\item \textbf{Input}: 57 continuous attributes measuring word frequencies (\texttt{word\_freq\_*}) and character occurrences (\texttt{char\_freq\_*}).
+\item \textbf{Output}: Target label \texttt{spam} (0 for ham and 1 for spam).
+\item \textbf{Objective}: Normalize features with MinMaxScaler, split the data into 80\% train and 20\% test sets, fit Naive Bayes and KNN models, run hyperparameter tuning, plot ROC and PR curves and measure execution times.
 \end{itemize}
 
 \section{Dataset Description}
@@ -74,10 +74,10 @@ Train-Test Split & 80\% Train (3680 samples) / 20\% Test (921 samples) \\ \hline
 \section{Exploratory Data Analysis}
 Include all relevant visualizations:
 \begin{itemize}
-\item \textbf{Dataset overview}: The dataset contains 4601 email records with 57 numerical feature attributes detailing word occurrences.
-\item \textbf{Class distribution}: 2788 legitimate ham emails (60.6\%) and 1813 spam emails (39.4\%).
-\item \textbf{Missing value check}: Running \texttt{df.isnull().sum()} confirmed zero missing values across all 57 columns.
-\item \textbf{Feature scaling}: Applied \texttt{MinMaxScaler} to scale all continuous features into the $[0, 1]$ interval.
+\item \textbf{Dataset overview}: The Spambase dataset contains 4601 rows with 57 numerical feature columns recording word frequencies.
+\item \textbf{Class distribution}: There are 2788 ham emails (60.6\%) and 1813 spam emails (39.4\%).
+\item \textbf{Missing value check}: Checking for missing entries with \texttt{df.isnull().sum()} showed no missing values anywhere.
+\item \textbf{Feature scaling}: I scaled all feature values to the range between 0 and 1 using \texttt{MinMaxScaler}.
 \end{itemize}
 
 \subsection*{Figure Template}
@@ -90,7 +90,7 @@ Include all relevant visualizations:
 \end{figure}
 
 \textbf{Inference:}
-The target distribution plot shows 2788 legitimate ham emails (60.6\%) and 1813 spam emails (39.4\%). This moderate class balance ensures classifiers learn distinct patterns for both classes without severe majority class bias.
+Looking at the class breakdown chart we have 2788 ham emails and 1813 spam emails. This moderate balance helps models learn patterns for both classes without getting biased toward one group.
 
 \begin{figure}[H]
 \centering
@@ -100,7 +100,7 @@ The target distribution plot shows 2788 legitimate ham emails (60.6\%) and 1813 
 \end{figure}
 
 \textbf{Inference:}
-The correlation heatmap illustrates linear relationships among the first 15 word frequency attributes. Most frequency features show low pairwise correlation, confirming that Naive Bayes conditional independence assumptions are reasonably satisfied.
+The correlation plot for the first 15 features shows low linear correlation between columns. This supports the independence assumption used in Naive Bayes algorithms.
 
 \begin{figure}[H]
 \centering
@@ -110,7 +110,7 @@ The correlation heatmap illustrates linear relationships among the first 15 word
 \end{figure}
 
 \textbf{Inference:}
-The histograms display heavy right-skewness for word frequency measurements. Most emails contain zero instances of specific keywords, with occasional high frequency spikes in spam emails.
+Histograms of word frequencies show a right skew. Most emails score zero for specific terms while spam messages show occasional high frequency spikes.
 
 \begin{figure}[H]
 \centering
@@ -120,27 +120,27 @@ The histograms display heavy right-skewness for word frequency measurements. Mos
 \end{figure}
 
 \textbf{Inference:}
-The boxplot illustrates medians and upper outliers across the first 10 attributes. Extremely low medians with multiple upper outliers highlight why MinMax feature scaling is necessary before distance-based KNN fitting.
+The boxplot displays low medians with several upper outliers. This confirms why scaling features with MinMaxScaler is important before running distance calculations in KNN.
 
 \section{Data Preprocessing}
 
 Explain:
 \begin{itemize}
-\item \textbf{Cleaning}: Verified dataset completeness using \texttt{df.isnull().sum()}.
-\item \textbf{Scaling}: Applied \texttt{MinMaxScaler} to compress feature values into the range $[0, 1]$.
-\item \textbf{Train-test split}: Stratified split into 80\% training (3680 samples) and 20\% testing (921 samples) using \texttt{random\_state=42}.
-\item \textbf{Binarization}: Created binary thresholded arrays ($X > 0.5$) for Bernoulli Naive Bayes.
+\item \textbf{Cleaning}: Checked dataset completeness using null check functions.
+\item \textbf{Scaling}: Scaled numerical features into the range 0 to 1 with \texttt{MinMaxScaler}.
+\item \textbf{Train-test split}: Split the dataset into 80\% training data and 20\% test data using stratified sampling.
+\item \textbf{Binarization}: Created binary feature arrays using thresholding at 0.5 for Bernoulli Naive Bayes.
 \end{itemize}
 
 \section{Machine Learning Algorithm}
 
 Explain:
 \begin{itemize}
-\item \textbf{Gaussian Naive Bayes}: Assumes continuous features follow Gaussian distributions $P(x_i|y) = \frac{1}{\sqrt{2\pi\sigma_y^2}} \exp\left(-\frac{(x_i-\mu_y)^2}{2\sigma_y^2}\right)$.
-\item \textbf{Multinomial Naive Bayes}: Suitable for word count frequencies, computing relative term frequencies across classes.
-\item \textbf{Bernoulli Naive Bayes}: Operates on binary occurrence features, evaluating presence or absence of key terms.
-\item \textbf{K-Nearest Neighbors (KNN)}: Classifies samples based on majority voting among $k$ nearest neighbors using Euclidean or Manhattan distances.
-\item \textbf{GridSearchCV \& RandomizedSearchCV}: Systematically search hyperparameter spaces for $k$, distance metrics, and weighting schemes.
+\item \textbf{Gaussian Naive Bayes}: Assumes features follow a normal distribution curve across classes $P(x_i|y) = \frac{1}{\sqrt{2\pi\sigma_y^2}} \exp\left(-\frac{(x_i-\mu_y)^2}{2\sigma_y^2}\right)$.
+\item \textbf{Multinomial Naive Bayes}: Works well for word frequency counts by tracking term probabilities.
+\item \textbf{Bernoulli Naive Bayes}: Handles binary inputs by checking whether key words are present or absent.
+\item \textbf{K-Nearest Neighbors (KNN)}: Classifies test samples based on majority voting among k nearest neighbors using Euclidean and Manhattan distance metrics.
+\item \textbf{GridSearchCV and RandomizedSearchCV}: Test different parameter combinations to find the best k value distance metric and neighbor weights.
 \end{itemize}
 
 \section{Experimental Setup}
@@ -230,7 +230,7 @@ For \textbf{every graph}, provide:
 \end{figure}
 
 \textbf{Inference:}
-Gaussian Naive Bayes achieved high recall (95.87\%) with 348 true positive spam predictions, but produced 139 false positives. The model is aggressive at flagging potential spam emails.
+Gaussian Naive Bayes reached 95.87\% recall with 348 true positive predictions, but caused 139 false positives. The model catches most spam but flags a few legitimate emails.
 
 \begin{figure}[H]
 \centering
@@ -240,7 +240,7 @@ Gaussian Naive Bayes achieved high recall (95.87\%) with 348 true positive spam 
 \end{figure}
 
 \textbf{Inference:}
-The ROC curve demonstrates strong separation capability with an area under the curve (AUC) of 0.9229. The curve rises sharply toward the upper left corner.
+The ROC curve shows strong separation between classes with an AUC score of 0.9229. The curve curves steeply toward the top left corner.
 
 \begin{figure}[H]
 \centering
@@ -250,7 +250,7 @@ The ROC curve demonstrates strong separation capability with an area under the c
 \end{figure}
 
 \textbf{Inference:}
-The precision-recall curve illustrates the tradeoff between precision and recall for Gaussian Naive Bayes. High recall is maintained across initial decision thresholds before precision drops.
+The precision recall graph shows high initial recall before precision drops as the threshold changes.
 
 \begin{figure}[H]
 \centering
@@ -260,7 +260,7 @@ The precision-recall curve illustrates the tradeoff between precision and recall
 \end{figure}
 
 \textbf{Inference:}
-Multinomial Naive Bayes reduced false positives to 17, achieving 94.31\% precision. Overall accuracy improved to 89.36\%, proving term frequency scaling fits text counts well.
+Multinomial Naive Bayes dropped false positives down to 17, giving 94.31\% precision and 89.36\% test accuracy.
 
 \begin{figure}[H]
 \centering
@@ -270,7 +270,7 @@ Multinomial Naive Bayes reduced false positives to 17, achieving 94.31\% precisi
 \end{figure}
 
 \textbf{Inference:}
-Plotting accuracy against neighbor count $k$ shows accuracy peaking at $k = 5$ with 90.23\% test accuracy. Increasing $k$ beyond 5 smooths decision boundaries but slightly reduces accuracy.
+Plotting accuracy against neighbor count k shows performance peaking at k = 5 with 90.23\% accuracy. Larger k values smooth out the decision boundaries.
 
 \begin{figure}[H]
 \centering
@@ -280,7 +280,7 @@ Plotting accuracy against neighbor count $k$ shows accuracy peaking at $k = 5$ w
 \end{figure}
 
 \textbf{Inference:}
-The confusion matrix for $k=5$ KNN shows 513 true negatives and 318 true positives. Misclassifications are balanced with 45 false positives and 45 false negatives, giving an overall accuracy of 90.23\%.
+The confusion matrix for k = 5 KNN shows 513 true negatives and 318 true positives. Misclassifications are balanced with 45 false positives and 45 false negatives.
 
 \begin{figure}[H]
 \centering
@@ -290,7 +290,7 @@ The confusion matrix for $k=5$ KNN shows 513 true negatives and 318 true positiv
 \end{figure}
 
 \textbf{Inference:}
-The ROC curve for the best KNN model achieves an AUC of 0.9419, outperforming all baseline Naive Bayes variants in discriminative capability.
+The ROC plot for k = 5 KNN reaches an AUC of 0.9419, performing better than the baseline Naive Bayes models.
 
 \begin{figure}[H]
 \centering
@@ -300,7 +300,7 @@ The ROC curve for the best KNN model achieves an AUC of 0.9419, outperforming al
 \end{figure}
 
 \textbf{Inference:}
-The precision-recall curve for KNN ($k=5$) maintains high precision above 0.85 across most recall levels, demonstrating consistent classification quality.
+The precision recall plot for k = 5 KNN stays above 0.85 precision across most recall values.
 
 \begin{figure}[H]
 \centering
@@ -310,7 +310,7 @@ The precision-recall curve for KNN ($k=5$) maintains high precision above 0.85 a
 \end{figure}
 
 \textbf{Inference:}
-The GridSearchCV heatmap shows Manhattan distance consistently outperforms Euclidean distance across all $k$ values, reaching peak cross-validation accuracy of 91.79\% at $k=7$.
+The heatmap from grid search shows Manhattan distance outperforming Euclidean distance, reaching 91.79\% cross validation accuracy at k = 7.
 
 \begin{figure}[H]
 \centering
@@ -320,7 +320,7 @@ The GridSearchCV heatmap shows Manhattan distance consistently outperforms Eucli
 \end{figure}
 
 \textbf{Inference:}
-The score distribution histogram from RandomizedSearchCV shows sampled parameter configurations clustering above 90\% validation accuracy, reaching a peak score of 91.85\%.
+The score distribution from random search shows scores grouping above 90\% validation accuracy and hitting a peak score of 91.85\%.
 
 \begin{figure}[H]
 \centering
@@ -330,7 +330,7 @@ The score distribution histogram from RandomizedSearchCV shows sampled parameter
 \end{figure}
 
 \textbf{Inference:}
-5-Fold cross-validation confirms Best KNN consistently outperforms Gaussian Naive Bayes across all 5 folds, achieving an average CV accuracy of 89.87\% versus 81.55\%.
+5-fold cross-validation shows Best KNN outperforming Gaussian Naive Bayes across every fold with an average accuracy of 89.87\% versus 81.55\%.
 
 \begin{figure}[H]
 \centering
@@ -340,7 +340,7 @@ The score distribution histogram from RandomizedSearchCV shows sampled parameter
 \end{figure}
 
 \textbf{Inference:}
-Training time comparison shows KNN requires the shortest training phase (0.006s) because fitting lazy learners only stores instances in memory.
+Training time comparison shows KNN is fastest to fit (0.006s) because lazy learning just keeps data in memory.
 
 \begin{figure}[H]
 \centering
@@ -350,7 +350,7 @@ Training time comparison shows KNN requires the shortest training phase (0.006s)
 \end{figure}
 
 \textbf{Inference:}
-Prediction time comparison reveals KNN requires significantly more prediction time (0.032s) than Naive Bayes models (0.003s--0.005s) due to distance calculations across training samples.
+Prediction time comparison shows KNN takes longer during testing (0.032s) than Naive Bayes models due to distance calculations across test points.
 
 \begin{figure}[H]
 \centering
@@ -360,24 +360,24 @@ Prediction time comparison reveals KNN requires significantly more prediction ti
 \end{figure}
 
 \textbf{Inference:}
-Comparing overall test accuracies shows Best KNN ($k=5$) leads with 90.23\%, followed by Multinomial NB (89.36\%), Gaussian NB (83.28\%), and Bernoulli NB (63.41\%).
+Comparing test scores shows KNN taking the top spot at 90.23\%, followed by Multinomial NB at 89.36\%, Gaussian NB at 83.28\% and Bernoulli NB at 63.41\%.
 
 \section{Discussion}
 Discuss observations, strengths, limitations and improvements:
 \begin{enumerate}
-\item \textbf{Model Performance}: Best KNN ($90.23\%$) and Multinomial Naive Bayes ($89.36\%$) outperformed Gaussian and Bernoulli variants on frequency count data.
-\item \textbf{Hyperparameter Optimization}: Hyperparameter search improved KNN accuracy to $91.85\%$ using Manhattan distance with inverse distance weighting.
-\item \textbf{Computational Efficiency}: Naive Bayes offers fast inference, making it suitable for real-time streaming spam filters.
+\item \textbf{Model Performance}: Best KNN (90.23\%) and Multinomial Naive Bayes (89.36\%) worked much better on word count data than Gaussian or Bernoulli variants.
+\item \textbf{Hyperparameter Optimization}: Tuning hyperparameters boosted KNN performance to 91.85\% accuracy using Manhattan distance and inverse weighting.
+\item \textbf{Computational Efficiency}: Naive Bayes has fast prediction times making it ideal for streaming spam filters.
 \end{enumerate}
 
 \section{Conclusion}
 Summarize the experiment and key findings:
-KNN with Manhattan distance achieved 91.85\% accuracy on Spambase. Hyperparameter optimization confirmed Manhattan distance and distance weighting improve performance over standard Euclidean KNN.
+KNN using Manhattan distance reached 91.85\% accuracy on Spambase. Hyperparameter tuning showed that Manhattan distance and distance weighting improve predictions over standard Euclidean distance.
 
 \section{References}
 Use IEEE style:
 \begin{enumerate}[label={[\arabic*]}]
-\item M. Hopkins, M. Reeber, G. Forman, and J. Suermondt, ``Spambase Dataset,'' \textit{UCI Machine Learning Repository}, 1999.
+\item M. Hopkins, M. Reeber, G. Forman and J. Suermondt, ``Spambase Dataset,'' \textit{UCI Machine Learning Repository}, 1999.
 \item F. Pedregosa \textit{et al.}, ``Scikit-learn: Machine learning in Python,'' \textit{Journal of Machine Learning Research}, vol. 12, pp. 2825--2830, 2011.
 \end{enumerate}
 

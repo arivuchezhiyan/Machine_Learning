@@ -39,7 +39,7 @@ showstringspaces=false
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 1 \\ \hline
-Experiment Title & Iris Flower Species Classification using Decision Tree, Logistic Regression, and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{1}} \\ \hline
+Experiment Title & Iris Flower Species Classification using Decision Tree, Logistic Regression and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{1}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -51,12 +51,12 @@ State the objective of the experiment:
 In this lab, I built and evaluated two classification models, Decision Tree Classifier and Logistic Regression, using the Iris dataset. I also applied univariate feature selection using SelectKBest with the ANOVA F-test to identify key attributes and test if dropping less important features impacts overall accuracy.
 
 \section{Problem Statement}
-Describe the problem, input, output, and objective:
+Describe the problem, input, output and objective:
 The Iris task involves classifying flower species based on physical measurements.
 \begin{itemize}
-\item \textbf{Input}: 4 continuous feature columns representing sepal length (\texttt{SepalLengthCm}), sepal width (\texttt{SepalWidthCm}), petal length (\texttt{PetalLengthCm}), and petal width (\texttt{PetalWidthCm}).
-\item \textbf{Output}: Species target label \texttt{Species} spanning 3 classes: Setosa (0), Versicolor (1), and Virginica (2).
-\item \textbf{Objective}: Implement end-to-end data cleaning, exploratory analysis, label encoding, train-test splitting, feature selection, model training, and performance evaluation.
+\item \textbf{Input}: 4 continuous feature columns representing sepal length (\texttt{SepalLengthCm}), sepal width (\texttt{SepalWidthCm}), petal length (\texttt{PetalLengthCm}) and petal width (\texttt{PetalWidthCm}).
+\item \textbf{Output}: Species target label \texttt{Species} spanning 3 classes: Setosa (0), Versicolor (1) and Virginica (2).
+\item \textbf{Objective}: Implement end-to-end data cleaning, exploratory analysis, label encoding, train-test splitting, feature selection, model training and performance evaluation.
 \end{itemize}
 
 \section{Dataset Description}
@@ -66,7 +66,7 @@ Dataset Name & Iris Dataset \\ \hline
 Dataset Source & Iris.csv \\ \hline
 Number of Samples & 150 \\ \hline
 Number of Features & 4 (excluding ID column) \\ \hline
-Number of Classes & 3 (Iris-setosa, Iris-versicolor, Iris-virginica) \\ \hline
+Number of Classes & 3 (Iris-setosa, Iris-versicolor Iris-virginica) \\ \hline
 Missing Values & 0 missing values \\ \hline
 Train-Test Split & 80\% Train (120 samples) / 20\% Test (30 samples) \\ \hline
 \end{longtable}
@@ -83,7 +83,7 @@ Include all relevant visualizations:
 \item Petal Width: Ranges from 0.10 cm to 2.50 cm with a mean of 1.20 cm.
 \end{itemize}
 \item \textbf{Missing value check}: Running \texttt{df.isnull().sum()} confirmed zero missing values across all columns.
-\item \textbf{Class distribution}: The dataset is balanced with 50 entries each for Setosa, Versicolor, and Virginica.
+\item \textbf{Class distribution}: The dataset is balanced with 50 entries each for Setosa, Versicolor and Virginica.
 \item \textbf{Correlation analysis}: Petal length and petal width show a strong positive correlation ($r = 0.96$). Sepal length also correlates well with petal length ($r = 0.87$).
 \item \textbf{Feature distribution}: Histograms display bimodal distributions for petal features, making them effective predictors.
 \end{itemize}
@@ -135,9 +135,9 @@ The correlation heatmap displays linear relationship strengths between features.
 Explain:
 \begin{itemize}
 \item \textbf{Cleaning}: Checked for null values and dropped the unnecessary \texttt{Id} column.
-\item \textbf{Label Encoding}: Converted species strings into integers using \texttt{LabelEncoder}: \texttt{Iris-setosa} $\rightarrow 0$, \texttt{Iris-versicolor} $\rightarrow 1$, and \texttt{Iris-virginica} $\rightarrow 2$.
+\item \textbf{Label Encoding}: Converted species strings into integers using \texttt{LabelEncoder}: \texttt{Iris-setosa} $\rightarrow 0$, \texttt{Iris-versicolor} $\rightarrow 1$ and \texttt{Iris-virginica} $\rightarrow 2$.
 \item \textbf{Train-test split}: Split data into 80\% training (120 samples) and 20\% testing (30 samples) using \texttt{random\_state=42}.
-\item \textbf{Feature Selection}: Applied \texttt{SelectKBest} with ANOVA F-test ($f\_classif$) to select top 2 features. F-scores: \texttt{SepalLengthCm} (33.15), \texttt{SepalWidthCm} (23.36), \texttt{PetalLengthCm} (442.27), and \texttt{PetalWidthCm} (309.84). The selected top features were \texttt{PetalLengthCm} and \texttt{PetalWidthCm}.
+\item \textbf{Feature Selection}: Applied \texttt{SelectKBest} with ANOVA F-test ($f\_classif$) to select top 2 features. F-scores: \texttt{SepalLengthCm} (33.15), \texttt{SepalWidthCm} (23.36), \texttt{PetalLengthCm} (442.27) and \texttt{PetalWidthCm} (309.84). The selected top features were \texttt{PetalLengthCm} and \texttt{PetalWidthCm}.
 \end{itemize}
 
 \section{Machine Learning Algorithm}
@@ -257,7 +257,7 @@ Recommended figures:
 \end{figure}
 
 \textbf{Inference:}
-The confusion matrix shows zero misclassifications across all 30 test samples (10 Setosa, 9 Versicolor, and 11 Virginica). Both models reached 100\% test accuracy, proving linear and tree-based methods separate the dataset effectively using all features or top petal attributes.
+The confusion matrix shows zero misclassifications across all 30 test samples (10 Setosa, 9 Versicolor and 11 Virginica). Both models reached 100\% test accuracy, proving linear and tree-based methods separate the dataset effectively using all features or top petal attributes.
 
 \section{Discussion}
 Discuss observations, strengths, limitations and improvements:
@@ -288,7 +288,7 @@ Use IEEE style:
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 2 \\ \hline
-Experiment Title & Diabetes Prediction using Decision Tree, Logistic Regression, and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{2}} \\ \hline
+Experiment Title & Diabetes Prediction using Decision Tree, Logistic Regression and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{2}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -300,12 +300,12 @@ State the objective of the experiment:
 In this lab, I trained Decision Tree and Logistic Regression models on medical patient data to predict diabetes. I also tested feature selection to identify key physiological signals.
 
 \section{Problem Statement}
-Describe the problem, input, output, and objective:
+Describe the problem, input, output and objective:
 Diabetes prediction is a binary classification task on patient health records.
 \begin{itemize}
-\item \textbf{Input}: 8 clinical parameters: \texttt{Pregnancies}, \texttt{Glucose}, \texttt{BloodPressure}, \texttt{SkinThickness}, \texttt{Insulin}, \texttt{BMI}, \texttt{DiabetesPedigreeFunction}, and \texttt{Age}.
+\item \textbf{Input}: 8 clinical parameters: \texttt{Pregnancies}, \texttt{Glucose}, \texttt{BloodPressure}, \texttt{SkinThickness}, \texttt{Insulin}, \texttt{BMI}, \texttt{DiabetesPedigreeFunction} and \texttt{Age}.
 \item \textbf{Output}: Binary target \texttt{Diagnosis} (0 for Non-Diabetic, 1 for Diabetic).
-\item \textbf{Objective}: Scale features, split data into train and test sets, run feature selection, fit classifiers, and evaluate performance on imbalanced medical data.
+\item \textbf{Objective}: Scale features, split data into train and test sets, run feature selection, fit classifiers and evaluate performance on imbalanced medical data.
 \end{itemize}
 
 \section{Dataset Description}
@@ -521,7 +521,7 @@ Use IEEE style:
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 3 \\ \hline
-Experiment Title & Loan Approval Prediction using Decision Tree, Logistic Regression, and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{3}} \\ \hline
+Experiment Title & Loan Approval Prediction using Decision Tree, Logistic Regression and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{3}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -533,12 +533,12 @@ State the objective of the experiment:
 In this lab, I evaluated Decision Tree and Logistic Regression models to predict loan approvals based on applicant financial data and credit history. I used ANOVA F-test feature selection to isolate key predictors.
 
 \section{Problem Statement}
-Describe the problem, input, output, and objective:
+Describe the problem, input, output and objective:
 Loan approval prediction is a binary classification task in financial risk management.
 \begin{itemize}
-\item \textbf{Input}: 12 applicant features including dependents, education, self-employed status, income, loan amount, term, CIBIL score, and asset values.
+\item \textbf{Input}: 12 applicant features including dependents, education, self-employed status, income, loan amount, term, CIBIL score and asset values.
 \item \textbf{Output}: Binary loan status (0 for approved, 1 for rejected).
-\item \textbf{Objective}: Encode categorical attributes, split dataset, select top features, fit classifiers, and compare metrics.
+\item \textbf{Objective}: Encode categorical attributes, split dataset, select top features, fit classifiers and compare metrics.
 \end{itemize}
 
 \section{Dataset Description}
@@ -557,7 +557,7 @@ Train-Test Split & 80\% Train (3415 samples) / 20\% Test (854 samples) \\ \hline
 Include all relevant visualizations:
 \begin{itemize}
 \item \textbf{Dataset overview}: The dataset contains 4269 loan applications with financial and asset details.
-\item \textbf{Statistical summary}: Mean annual income is \$5,059,124, mean loan amount is \$15,131,951, and average CIBIL score is 599.9.
+\item \textbf{Statistical summary}: Mean annual income is \$5,059,124, mean loan amount is \$15,131,951 and average CIBIL score is 599.9.
 \item \textbf{Missing value check}: Confirmed zero missing values across all columns.
 \item \textbf{Class distribution}: 2656 approved loans (62.2\%) and 1613 rejected loans (37.8\%).
 \item \textbf{Correlation analysis}: CIBIL credit score showed the strongest correlation with loan approval.
@@ -583,7 +583,7 @@ The class distribution shows 2656 approved applications (62\%) and 1613 rejected
 \end{figure}
 
 \textbf{Inference:}
-The histograms display distributions for financial variables including annual income, loan amount, and asset values. CIBIL score is uniformly distributed from 300 to 900, while income and asset values show continuous distributions.
+The histograms display distributions for financial variables including annual income, loan amount and asset values. CIBIL score is uniformly distributed from 300 to 900, while income and asset values show continuous distributions.
 
 \begin{figure}[H]
 \centering
@@ -620,7 +620,7 @@ The correlation heatmap displays positive correlations between asset valuations 
 Explain:
 \begin{itemize}
 \item \textbf{Cleaning}: Trimmed extra whitespaces and verified zero missing values.
-\item \textbf{Encoding}: Used \texttt{LabelEncoder} on categorical fields: \texttt{education}, \texttt{self\_employed}, and \texttt{loan\_status}.
+\item \textbf{Encoding}: Used \texttt{LabelEncoder} on categorical fields: \texttt{education}, \texttt{self\_employed} and \texttt{loan\_status}.
 \item \textbf{Train-test split}: Split into 80\% training (3415 samples) and 20\% testing (854 samples) using \texttt{random\_state=42}.
 \item \textbf{Feature Selection}: Applied \texttt{SelectKBest} ($f\_classif, k=6$). \texttt{cibil\_score} yielded an F-score of 5018.32, dominating other features. Selected top 6 attributes: \texttt{['cibil\_score', 'loan\_term', 'no\_of\_dependents', 'income\_annum', 'residential\_assets\_value', 'luxury\_assets\_value']}.
 \end{itemize}
@@ -767,7 +767,7 @@ Use IEEE style:
 \begin{tabular}{|p{4cm}|p{11cm}|}
 \hline
 Experiment No. & 4 \\ \hline
-Experiment Title & SMS Spam Mail Detection using TF-IDF, Decision Tree, Logistic Regression, and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{4}} \\ \hline
+Experiment Title & SMS Spam Mail Detection using TF-IDF, Decision Tree, Logistic Regression and Feature Selection \textsuperscript{\href{https://github.com/arivuchezhiyan/Machine_Learning}{4}} \\ \hline
 Student Name & Arivuchezhiyan E \\ \hline
 Register Number & 3122247001006 \\ \hline
 Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
@@ -779,12 +779,12 @@ State the objective of the experiment:
 In this lab, I vectorized SMS text using TF-IDF and compared Decision Tree and Logistic Regression models for spam detection. I also extracted key trigger words using feature selection.
 
 \section{Problem Statement}
-Describe the problem, input, output, and objective:
+Describe the problem, input, output and objective:
 SMS spam detection is a binary text classification problem in natural language processing.
 \begin{itemize}
 \item \textbf{Input}: Raw text messages (\texttt{v2}).
 \item \textbf{Output}: Binary class label \texttt{v1} (\texttt{ham}: 0, \texttt{spam}: 1).
-\item \textbf{Objective}: Remove duplicate messages, convert text to TF-IDF vectors, train classifiers, find top spam tokens, and evaluate precision.
+\item \textbf{Objective}: Remove duplicate messages, convert text to TF-IDF vectors, train classifiers, find top spam tokens and evaluate precision.
 \end{itemize}
 
 \section{Dataset Description}
@@ -955,7 +955,7 @@ Discuss observations, strengths, limitations and improvements:
 \begin{enumerate}
 \item \textbf{High Performance}: Both Decision Tree ($96.77\%$) and Logistic Regression ($96.32\%$) performed well on sparse text data.
 \item \textbf{Zero False Positives}: Logistic Regression ensured no legitimate message was mislabeled as spam.
-\item \textbf{Spam Keywords}: Feature selection highlighted clear spam trigger words such as \texttt{claim}, \texttt{free}, \texttt{prize}, \texttt{txt}, and \texttt{www}.
+\item \textbf{Spam Keywords}: Feature selection highlighted clear spam trigger words such as \texttt{claim}, \texttt{free}, \texttt{prize}, \texttt{txt} and \texttt{www}.
 \end{enumerate}
 
 \section{Conclusion}
@@ -965,7 +965,7 @@ SMS Spam classification reached over 96\% accuracy. Combining TF-IDF text vector
 \section{References}
 Use IEEE style:
 \begin{enumerate}[label={[\arabic*]}]
-\item T. Almeida, J. Hidalgo, and A. Yamakami, ``Contributions to the study of SMS spam filtering: New collection and results,'' \textit{ACM Symposium on Document Engineering}, pp. 259--262, 2011.
+\item T. Almeida, J. Hidalgo and A. Yamakami, ``Contributions to the study of SMS spam filtering: New collection and results,'' \textit{ACM Symposium on Document Engineering}, pp. 259--262, 2011.
 \end{enumerate}
 
 \newpage
@@ -989,7 +989,7 @@ State the objective of the experiment:
 In this experiment, I evaluated Decision Tree classifiers on MNIST handwritten digits, comparing performance using all 784 pixels against a reduced 300-pixel set chosen with Chi-Squared selection.
 
 \section{Problem Statement}
-Describe the problem, input, output, and objective:
+Describe the problem, input, output and objective:
 MNIST digit recognition is a 10-class image classification task mapping pixel values to digits 0 through 9.
 \begin{itemize}
 \item \textbf{Input}: $28 \times 28$ grayscale pixel intensity grid (784 features from \texttt{1x1} to \texttt{28x28}).
@@ -1013,7 +1013,7 @@ Train-Test Split & 80\% Train (8000 samples) / 20\% Test (2000 samples) \\ \hlin
 Include all relevant visualizations:
 \begin{itemize}
 \item \textbf{Dataset overview}: Contains 10000 digit images represented as 784 pixel columns with values ranging from 0 to 255.
-\item \textbf{Class distribution}: Digit 1 (1135), 2 (1032), 7 (1028), 3 (1010), 9 (1009), 4 (982), 0 (980), 8 (974), 6 (958), and 5 (892).
+\item \textbf{Class distribution}: Digit 1 (1135), 2 (1032), 7 (1028), 3 (1010), 9 (1009), 4 (982), 0 (980), 8 (974), 6 (958) and 5 (892).
 \item \textbf{Missing value check}: Confirmed zero missing values.
 \end{itemize}
 
@@ -1171,7 +1171,7 @@ Chi-Squared feature selection removed 484 empty border pixels on MNIST, speeding
 \section{References}
 Use IEEE style:
 \begin{enumerate}[label={[\arabic*]}]
-\item Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner, ``Gradient-based learning applied to document recognition,'' \textit{Proceedings of the IEEE}, vol. 86, no. 11, pp. 2278--2324, 1998.
+\item Y. LeCun, L. Bottou, Y. Bengio and P. Haffner, ``Gradient-based learning applied to document recognition,'' \textit{Proceedings of the IEEE}, vol. 86, no. 11, pp. 2278--2324, 1998.
 \end{enumerate}
 
 \end{document}
