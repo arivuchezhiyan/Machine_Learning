@@ -167,13 +167,15 @@ Evaluating the cumulative variance spectrum on the WDBC training set indicated t
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|p{3cm}|p{3.5cm}|p{3.5cm}|p{4.5cm}|}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{|p{2.5cm}|p{4.2cm}|p{3.5cm}|p{5.5cm}|}
 \hline
 \textbf{Setting} & \textbf{Chosen Components / Variance Target} & \textbf{Explained Variance (\%)} & \textbf{Justification} \\ \hline
 \textbf{No-PCA} & 30 Features & 100.00\% & Full original feature representation preserving raw morphometry. \\ \hline
 \textbf{With-PCA} & $k = 10$ Components (Target: 95\%) & \textbf{95.27\%} & Captures over 95\% intrinsic variance, decorrelates features and discards noise dimensions. \\ \hline
-\end{tabular}
-\caption{Table 1: PCA Variance Explained Summary and Dimensionality Justification}
+\end{tabular}%
+}
+\caption{PCA Variance Explained Summary and Dimensionality Justification}
 \label{tab:exp7_pca_summary}
 \end{table}
 
@@ -218,22 +220,25 @@ In accordance with the experimental specification, ten classification models wer
 
 Systematic grid search was conducted under 5-fold Stratified Cross-Validation on the 455 training samples for both No-PCA and With-PCA modes:
 
-\subsection*{Table 2: Support Vector Machine (SVM) Hyperparameter Tuning Results}
+\subsection*{Support Vector Machine (SVM) Hyperparameter Tuning Results}
 \begin{table}[H]
 \centering
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{|l|l|l|c|c|}
 \hline
 \textbf{Kernel} & \textbf{C Values Tried} & \textbf{Gamma Values Tried} & \textbf{Performance (No-PCA)} & \textbf{Performance (With-PCA)} \\ \hline
 Linear & $[0.1, 1.0, 10.0, 100.0]$ & scale, auto & \textbf{97.58\%} ($C=0.1$) & 97.36\% ($C=1.0$) \\ \hline
 RBF & $[0.1, 1.0, 10.0, 100.0]$ & $[0.01, 0.1, \text{scale}]$ & 97.36\% ($C=10.0$) & \textbf{98.02\%} ($C=10.0, \gamma=0.01$) \\ \hline
-\end{tabular}
-\caption{Table 2: SVM Hyperparameter Tuning Comparison (No-PCA vs With-PCA)}
+\end{tabular}%
+}
+\caption{SVM Hyperparameter Tuning Comparison (No-PCA vs With-PCA)}
 \label{tab:exp7_svm_tuning}
 \end{table}
 
-\subsection*{Table 3: Naive Bayes Variance Smoothing Choices}
+\subsection*{Naive Bayes Variance Smoothing Choices}
 \begin{table}[H]
 \centering
+\resizebox{0.8\linewidth}{!}{%
 \begin{tabular}{|l|c|c|}
 \hline
 \textbf{Smoothing Parameter (\texttt{var\_smoothing})} & \textbf{Performance (No-PCA)} & \textbf{Performance (With-PCA)} \\ \hline
@@ -242,14 +247,16 @@ $10^{-9}$ & 93.41\% & 91.65\% \\ \hline
 $10^{-7}$ & 93.19\% & 91.43\% \\ \hline
 $10^{-5}$ & 92.53\% & 90.99\% \\ \hline
 $10^{-3}$ & 91.87\% & 90.11\% \\ \hline
-\end{tabular}
-\caption{Table 3: Naive Bayes Smoothing Tuning Comparison}
+\end{tabular}%
+}
+\caption{Naive Bayes Smoothing Tuning Comparison}
 \label{tab:exp7_nb_tuning}
 \end{table}
 
-\subsection*{Table 4: k-Nearest Neighbors (KNN) Hyperparameter Tuning}
+\subsection*{k-Nearest Neighbors (KNN) Hyperparameter Tuning}
 \begin{table}[H]
 \centering
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{|l|l|l|c|c|}
 \hline
 \textbf{k Values} & \textbf{Weights} & \textbf{Distance Metrics} & \textbf{Performance (No-PCA)} & \textbf{Performance (With-PCA)} \\ \hline
@@ -257,16 +264,17 @@ $k \in [3, 5, 7, 9, 11]$ & Uniform & Manhattan & \textbf{97.14\%} ($k=3$) & 96.0
 $k \in [3, 5, 7, 9, 11]$ & Distance & Manhattan & 96.92\% ($k=5$) & 96.04\% ($k=5$) \\ \hline
 $k \in [3, 5, 7, 9, 11]$ & Uniform & Euclidean & 96.70\% ($k=5$) & \textbf{96.48\%} ($k=5$) \\ \hline
 $k \in [3, 5, 7, 9, 11]$ & Distance & Euclidean & 96.70\% ($k=5$) & 96.26\% ($k=5$) \\ \hline
-\end{tabular}
-\caption{Table 4: KNN Hyperparameter Tuning Comparison}
+\end{tabular}%
+}
+\caption{KNN Hyperparameter Tuning Comparison}
 \label{tab:exp7_knn_tuning}
 \end{table}
 
-\subsection*{Table 5: Hyperparameter Tuning Summary for Remaining Models}
+\subsection*{Hyperparameter Tuning Summary for Remaining Models}
 \begin{table}[H]
 \centering
-\small
-\begin{tabular}{|p{3.2cm}|p{3.8cm}|p{3.8cm}|c|c|}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{|p{3.2cm}|p{4.2cm}|p{4.2cm}|c|c|}
 \hline
 \textbf{Model} & \textbf{Best Params (No-PCA)} & \textbf{Best Params (With-PCA)} & \textbf{CV (No-PCA)} & \textbf{CV (With-PCA)} \\ \hline
 Logistic Regression & $C=0.1$, penalty=$L_2$, lbfgs & $C=0.1$, penalty=$L_2$, lbfgs & \textbf{98.24\%} & \textbf{98.24\%} \\ \hline
@@ -276,17 +284,18 @@ AdaBoost & n\_est=100, lr=1.0 & n\_est=100, lr=0.5 & \textbf{98.02\%} & 96.48\% 
 Gradient Boosting & n\_est=150, lr=0.2, depth=2 & n\_est=150, lr=0.2, depth=2 & \textbf{97.36\%} & 96.48\% \\ \hline
 XGBoost & n\_iter=100, lr=0.1, depth=3 & n\_iter=150, lr=0.1, depth=5 & \textbf{97.36\%} & 96.48\% \\ \hline
 Stacking & Base: SVM, NB, KNN, DT & Base: SVM, NB, KNN, DT & 96.26\% & \textbf{97.36\%} \\ \hline
-\end{tabular}
-\caption{Table 5: Optimal Hyperparameters and Cross-Validation Scores for All Remaining Models}
+\end{tabular}%
+}
+\caption{Optimal Hyperparameters and Cross-Validation Scores for All Remaining Models}
 \label{tab:exp7_other_tuning}
 \end{table}
 
 \section{Cross-Validation and Test Evaluation Results}
 
-\subsection*{Table 6: Complete 5-Fold Cross-Validation Comparison (No-PCA vs With-PCA)}
+\subsection*{5-Fold Cross-Validation Comparison (No-PCA vs With-PCA)}
 \begin{table}[H]
 \centering
-\small
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{|l|ccccc|c|c|c|}
 \hline
 \textbf{Model} & \textbf{Fold 1} & \textbf{Fold 2} & \textbf{Fold 3} & \textbf{Fold 4} & \textbf{Fold 5} & \textbf{Avg (No-PCA)} & \textbf{Avg (With-PCA)} & \textbf{PCA Delta} \\ \hline
@@ -300,15 +309,16 @@ AdaBoost & 94.5\% & 97.8\% & 94.5\% & 97.8\% & 97.8\% & \textbf{98.02\%} & 96.48
 Gradient Boost & 94.5\% & 97.8\% & 93.4\% & 97.8\% & 98.9\% & \textbf{97.36\%} & 96.48\% & -0.88\% \\ \hline
 XGBoost & 92.3\% & 98.9\% & 94.5\% & 97.8\% & 98.9\% & \textbf{97.36\%} & 96.48\% & -0.88\% \\ \hline
 Stacking & 95.6\% & 98.9\% & 95.6\% & 97.8\% & 98.9\% & 96.26\% & \textbf{97.36\%} & \textbf{+1.10\%} \\ \hline
-\end{tabular}
-\caption{Table 6: 5-Fold Stratified Cross-Validation Results (No-PCA vs With-PCA across 10 Models)}
+\end{tabular}%
+}
+\caption{5-Fold Stratified Cross-Validation Results (No-PCA vs With-PCA across 10 Models)}
 \label{tab:exp7_cv_results}
 \end{table}
 
-\subsection*{Table 7: Independent Test Set Performance Comparison (114 Samples)}
+\subsection*{Independent Test Set Performance Comparison (114 Samples)}
 \begin{table}[H]
 \centering
-\small
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{|l|cc|cc|cc|cc|}
 \hline
 \multirow{2}{*}{\textbf{Model}} & \multicolumn{2}{c|}{\textbf{Accuracy (\%)}} & \multicolumn{2}{c|}{\textbf{Precision}} & \multicolumn{2}{c|}{\textbf{Recall}} & \multicolumn{2}{c|}{\textbf{ROC-AUC}} \\ \cline{2-9}
@@ -323,14 +333,16 @@ AdaBoost & \textbf{95.61\%} & 93.86\% & 0.9467 & 0.9577 & \textbf{0.9861} & 0.94
 Gradient Boost & \textbf{95.61\%} & 94.74\% & 0.9467 & 0.9583 & \textbf{0.9861} & 0.9583 & \textbf{0.9914} & 0.9841 \\ \hline
 XGBoost & 95.61\% & \textbf{97.37\%} & 0.9467 & \textbf{0.9600} & 0.9861 & \textbf{1.0000} & \textbf{0.9927} & 0.9921 \\ \hline
 Stacking & 96.49\% & 96.49\% & 0.9595 & \textbf{0.9722} & \textbf{0.9861} & 0.9722 & \textbf{0.9911} & 0.9904 \\ \hline
-\end{tabular}
-\caption{Table 7: Comprehensive Test Set Metrics Comparison (No-PCA vs With-PCA)}
+\end{tabular}%
+}
+\caption{Comprehensive Test Set Metrics Comparison (No-PCA vs With-PCA)}
 \label{tab:exp7_test_metrics}
 \end{table}
 
-\subsection*{Table 8: Confusion Matrix Contingency Breakdown}
+\subsection*{Confusion Matrix Contingency Breakdown}
 \begin{table}[H]
 \centering
+\resizebox{0.9\linewidth}{!}{%
 \begin{tabular}{|l|cccc|cccc|}
 \hline
 \multirow{2}{*}{\textbf{Model}} & \multicolumn{4}{c|}{\textbf{No-PCA Contingency}} & \multicolumn{4}{c|}{\textbf{With-PCA Contingency}} \\ \cline{2-9}
@@ -345,8 +357,9 @@ AdaBoost & 38 & 4 & 1 & 71 & 39 & 3 & 4 & 68 \\ \hline
 Gradient Boosting & 38 & 4 & 1 & 71 & 39 & 3 & 3 & 69 \\ \hline
 XGBoost & 38 & 4 & 1 & 71 & 39 & 3 & 0 & 72 \\ \hline
 Stacking & 39 & 3 & 1 & 71 & 40 & 2 & 2 & 70 \\ \hline
-\end{tabular}
-\caption{Table 8: Confusion Matrix Breakdown for all 10 Classifiers on 114 Test Samples}
+\end{tabular}%
+}
+\caption{Confusion Matrix Breakdown for all 10 Classifiers on 114 Test Samples}
 \label{tab:exp7_cm_table}
 \end{table}
 
